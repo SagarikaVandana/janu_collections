@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin API Test - Updated JWT Secret</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Admin API Test - Updated JWT Secret</h1>
+    
+    <div class="info" style="padding: 15px; margin-bottom: 20px;">
+        <strong>Updated Configuration:</strong> JWT Secret has been updated to use the new secure key.
+    </div>
+    
+    <div class="test-section">
+        <h3>1. Admin Login (New JWT Secret)</h3>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Get Products (requires token)</h3>
+        <button onclick="testGetProducts()">Test Get Products</button>
+        <div id="productsResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Current Token</h3>
+        <button onclick="showToken()">Show Token</button>
+        <div id="tokenResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Test User Verification</h3>
+        <button onclick="testUserVerification()">Test /api/auth/me</button>
+        <div id="userResult" class="result"></div>
+    </div>
+
+    <script>
+        let authToken = '';
+        
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = 'Testing login with new JWT secret...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'jhansi.vandana1@gmail.com',
+                        password: 'Janu@123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    resultDiv.innerHTML = `<div class="success">✅ Login successful with new JWT secret!</div>`;
+                    resultDiv.innerHTML += `<div>User: ${data.user.name} (Admin: ${data.user.isAdmin})</div>`;
+                    resultDiv.innerHTML += `<div>Token: ${data.token.substring(0, 20)}...</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Login failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testGetProducts() {
+            const resultDiv = document.getElementById('productsResult');
+            resultDiv.innerHTML = 'Testing get products...';
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<div class="error">❌ No token available. Please login first.</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/products', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ Products fetched successfully!</div>`;
+                    resultDiv.innerHTML += `<div>Found ${data.products ? data.products.length : data.length} products</div>`;
+                    if (data.products && data.products.length > 0) {
+                        resultDiv.innerHTML += `<div>First product: ${data.products[0].name}</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to get products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testUserVerification() {
+            const resultDiv = document.getElementById('userResult');
+            resultDiv.innerHTML = 'Testing user verification...';
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<div class="error">❌ No token available. Please login first.</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ User verification successful!</div>`;
+                    resultDiv.innerHTML += `<div>User: ${data.name} (${data.email})</div>`;
+                    resultDiv.innerHTML += `<div>Admin: ${data.isAdmin ? 'Yes' : 'No'}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ User verification failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        function showToken() {
+            const resultDiv = document.getElementById('tokenResult');
+            if (authToken) {
+                resultDiv.innerHTML = `<div class="success">✅ Token available</div>`;
+                resultDiv.innerHTML += `<div style="word-break: break-all; font-family: monospace; font-size: 12px;">${authToken}</div>`;
+            } else {
+                resultDiv.innerHTML = '<div class="error">❌ No token available</div>';
+            }
+        }
+    </script>
+</body>
+</html> 

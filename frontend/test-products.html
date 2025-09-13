@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .product-item { border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Products API Test</h1>
+    
+    <div class="info" style="padding: 15px; margin-bottom: 20px;">
+        <strong>Testing Products API:</strong> This will test the products API endpoints to see if products are available.
+    </div>
+    
+    <div class="test-section">
+        <h3>1. Get All Products</h3>
+        <button onclick="testGetAllProducts()">Test Get All Products</button>
+        <div id="allProductsResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Get Products by Category</h3>
+        <button onclick="testGetProductsByCategory('sarees')">Test Sarees</button>
+        <button onclick="testGetProductsByCategory('kurtis')">Test Kurtis</button>
+        <button onclick="testGetProductsByCategory('western')">Test Western</button>
+        <div id="categoryProductsResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test Backend Health</h3>
+        <button onclick="testBackendHealth()">Test Backend Health</button>
+        <div id="healthResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Test Products with Filters</h3>
+        <button onclick="testProductsWithFilters()">Test Products with Price Filter</button>
+        <div id="filteredProductsResult" class="result"></div>
+    </div>
+
+    <script>
+        async function testGetAllProducts() {
+            const resultDiv = document.getElementById('allProductsResult');
+            resultDiv.innerHTML = 'Testing get all products...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/products');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    resultDiv.innerHTML = `<div class="success">✅ Products fetched successfully!</div>`;
+                    resultDiv.innerHTML += `<div>Found ${products.length} products</div>`;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div><strong>Sample Products:</strong></div>`;
+                        products.slice(0, 3).forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <strong>${index + 1}. ${product.name}</strong><br>
+                                    Price: ₹${product.price}<br>
+                                    Category: ${product.category}<br>
+                                    Stock: ${product.stock}
+                                </div>
+                            `;
+                        });
+                    } else {
+                        resultDiv.innerHTML += `<div>No products found in the database</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to get products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testGetProductsByCategory(category) {
+            const resultDiv = document.getElementById('categoryProductsResult');
+            resultDiv.innerHTML = `Testing get products by category: ${category}...`;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/products?category=${category}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    resultDiv.innerHTML = `<div class="success">✅ ${category} products fetched successfully!</div>`;
+                    resultDiv.innerHTML += `<div>Found ${products.length} ${category} products</div>`;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div><strong>${category} Products:</strong></div>`;
+                        products.slice(0, 2).forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <strong>${index + 1}. ${product.name}</strong><br>
+                                    Price: ₹${product.price}<br>
+                                    Category: ${product.category}
+                                </div>
+                            `;
+                        });
+                    } else {
+                        resultDiv.innerHTML += `<div>No ${category} products found</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to get ${category} products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testBackendHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.innerHTML = 'Testing backend health...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ Backend is healthy!</div>`;
+                    resultDiv.innerHTML += `<div>Status: ${data.status}</div>`;
+                    resultDiv.innerHTML += `<div>Timestamp: ${data.timestamp}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Backend health check failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testProductsWithFilters() {
+            const resultDiv = document.getElementById('filteredProductsResult');
+            resultDiv.innerHTML = 'Testing products with price filter (under ₹1000)...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/products?maxPrice=1000');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    resultDiv.innerHTML = `<div class="success">✅ Filtered products fetched successfully!</div>`;
+                    resultDiv.innerHTML += `<div>Found ${products.length} products under ₹1000</div>`;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div><strong>Products under ₹1000:</strong></div>`;
+                        products.slice(0, 3).forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <strong>${index + 1}. ${product.name}</strong><br>
+                                    Price: ₹${product.price}<br>
+                                    Category: ${product.category}
+                                </div>
+                            `;
+                        });
+                    } else {
+                        resultDiv.innerHTML += `<div>No products found under ₹1000</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to get filtered products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html> 

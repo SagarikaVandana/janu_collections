@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Creation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Order Creation Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Authentication</h2>
+        <p>First, let's test if you're properly authenticated.</p>
+        
+        <button class="test-button" onclick="testAuth()">Test Authentication</button>
+        <button class="test-button" onclick="testLogin()">Test Login</button>
+        
+        <div id="auth-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Order Creation</h2>
+        <p>Test creating an order with sample data.</p>
+        
+        <div>
+            <label>Token (from localStorage):</label>
+            <input type="text" id="token-input" placeholder="Enter JWT token or leave empty to use localStorage">
+        </div>
+        
+        <button class="test-button" onclick="testOrderCreation()">Test Order Creation</button>
+        <button class="test-button" onclick="testOrderCreationWithSampleData()">Test with Sample Data</button>
+        
+        <div id="order-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Debug Information</h2>
+        <p>Check current state and localStorage data.</p>
+        
+        <button class="test-button" onclick="showDebugInfo()">Show Debug Info</button>
+        
+        <div id="debug-result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        function displayResult(elementId, data, isError = false, isSuccess = false) {
+            const element = document.getElementById(elementId);
+            const className = isError ? 'result error' : isSuccess ? 'result success' : 'result';
+            element.innerHTML = `<div class="${className}"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+        }
+
+        async function testAuth() {
+            try {
+                const token = localStorage.getItem('token') || document.getElementById('token-input').value;
+                
+                if (!token) {
+                    displayResult('auth-result', { error: 'No token found. Please login first.' }, true);
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('auth-result', { 
+                        message: 'Authentication successful',
+                        user: data 
+                    }, false, true);
+                } else {
+                    displayResult('auth-result', { 
+                        error: 'Authentication failed',
+                        details: data 
+                    }, true);
+                }
+            } catch (error) {
+                displayResult('auth-result', { error: error.message }, true);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const loginData = {
+                    email: 'test@example.com',
+                    password: 'password123'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('auth-result', { 
+                        message: 'Login successful',
+                        token: data.token ? 'Token received' : 'No token in response',
+                        user: data.user 
+                    }, false, true);
+                    
+                    // Store token if received
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        document.getElementById('token-input').value = data.token;
+                    }
+                } else {
+                    displayResult('auth-result', { 
+                        error: 'Login failed',
+                        details: data 
+                    }, true);
+                }
+            } catch (error) {
+                displayResult('auth-result', { error: error.message }, true);
+            }
+        }
+
+        async function testOrderCreation() {
+            try {
+                const token = localStorage.getItem('token') || document.getElementById('token-input').value;
+                
+                if (!token) {
+                    displayResult('order-result', { error: 'No token found. Please login first.' }, true);
+                    return;
+                }
+
+                const orderData = {
+                    items: [
+                        {
+                            _id: '507f1f77bcf86cd799439011',
+                            name: 'Test Product',
+                            image: 'https://via.placeholder.com/150',
+                            price: 999,
+                            quantity: 1,
+                            size: 'M'
+                        }
+                    ],
+                    totalAmount: 1098,
+                    shippingInfo: {
+                        fullName: 'Test User',
+                        email: 'test@example.com',
+                        phone: '9876543210',
+                        address: '123 Test Street',
+                        city: 'Test City',
+                        state: 'Test State',
+                        pincode: '123456'
+                    },
+                    paymentMethod: 'bank_transfer'
+                };
+
+                console.log('Creating order with data:', orderData);
+
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('order-result', { 
+                        message: 'Order created successfully',
+                        order: data.order || data,
+                        orderId: data.order?._id || data._id
+                    }, false, true);
+                } else {
+                    displayResult('order-result', { 
+                        error: 'Order creation failed',
+                        status: response.status,
+                        details: data 
+                    }, true);
+                }
+            } catch (error) {
+                displayResult('order-result', { error: error.message }, true);
+            }
+        }
+
+        async function testOrderCreationWithSampleData() {
+            try {
+                const token = localStorage.getItem('token') || document.getElementById('token-input').value;
+                
+                if (!token) {
+                    displayResult('order-result', { error: 'No token found. Please login first.' }, true);
+                    return;
+                }
+
+                // Test with minimal data
+                const orderData = {
+                    items: [
+                        {
+                            _id: '507f1f77bcf86cd799439011',
+                            name: 'Sample Product',
+                            price: 500,
+                            quantity: 1
+                        }
+                    ],
+                    totalAmount: 599,
+                    shippingInfo: {
+                        fullName: 'Sample User',
+                        email: 'sample@example.com',
+                        phone: '1234567890',
+                        address: 'Sample Address',
+                        city: 'Sample City',
+                        state: 'Sample State',
+                        pincode: '123456'
+                    },
+                    paymentMethod: 'bank_transfer'
+                };
+
+                console.log('Creating order with sample data:', orderData);
+
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('order-result', { 
+                        message: 'Sample order created successfully',
+                        order: data.order || data,
+                        orderId: data.order?._id || data._id
+                    }, false, true);
+                } else {
+                    displayResult('order-result', { 
+                        error: 'Sample order creation failed',
+                        status: response.status,
+                        details: data 
+                    }, true);
+                }
+            } catch (error) {
+                displayResult('order-result', { error: error.message }, true);
+            }
+        }
+
+        function showDebugInfo() {
+            const debugInfo = {
+                localStorage: {
+                    token: localStorage.getItem('token') ? 'Token exists' : 'No token',
+                    user: localStorage.getItem('user') ? 'User data exists' : 'No user data'
+                },
+                currentUrl: window.location.href,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            };
+            
+            displayResult('debug-result', debugInfo);
+        }
+
+        // Auto-run debug info on page load
+        window.onload = function() {
+            console.log('Order Creation Test Page Loaded');
+            console.log('API Base URL:', API_BASE_URL);
+            console.log('LocalStorage token:', localStorage.getItem('token') ? 'Exists' : 'Not found');
+        };
+    </script>
+</body>
+</html> 

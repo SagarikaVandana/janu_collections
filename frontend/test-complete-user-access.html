@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete User Access Test - All Admin Products</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #007bff; }
+        .error { background: #f8d7da; color: #721c24; border-left-color: #dc3545; }
+        .success { background: #d4edda; color: #155724; border-left-color: #28a745; }
+        .info { background: #d1ecf1; color: #0c5460; border-left-color: #17a2b8; }
+        .product-item { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 4px; background: #fafafa; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }
+        .product-image { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        .summary { background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .loading { text-align: center; padding: 20px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Complete User Access Test - All Admin Products</h1>
+        
+        <div class="summary">
+            <h3>📋 Test Summary</h3>
+            <p><strong>Purpose:</strong> Verify that regular users can see ALL products that the admin has added and updated.</p>
+            <p><strong>Backend:</strong> <span id="backendStatus">Checking...</span></p>
+            <p><strong>Frontend:</strong> <span id="frontendStatus">Checking...</span></p>
+            <p><strong>Database:</strong> <span id="dbStatus">Checking...</span></p>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔍 1. System Health Check</h3>
+            <button onclick="checkSystemHealth()">Check System Health</button>
+            <div id="healthResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🏠 2. Home Page Products (Latest 12)</h3>
+            <button onclick="testHomePageProducts()">Test Home Page Products</button>
+            <div id="homeProductsResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📦 3. All Products (Complete List)</h3>
+            <button onclick="testAllProducts()">Test All Products</button>
+            <div id="allProductsResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🏷️ 4. Products by Category</h3>
+            <button onclick="testCategoryProducts('sarees')">Sarees</button>
+            <button onclick="testCategoryProducts('kurtis')">Kurtis</button>
+            <button onclick="testCategoryProducts('western')">Western</button>
+            <button onclick="testCategoryProducts('ethnic')">Ethnic</button>
+            <button onclick="testCategoryProducts('accessories')">Accessories</button>
+            <div id="categoryProductsResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔎 5. Product Search</h3>
+            <button onclick="testSearchProducts('cotton')">Search "Cotton"</button>
+            <button onclick="testSearchProducts('silk')">Search "Silk"</button>
+            <button onclick="testSearchProducts('embroidery')">Search "Embroidery"</button>
+            <div id="searchProductsResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📄 6. Product Details</h3>
+            <button onclick="testProductDetails()">Test Product Details</button>
+            <div id="productDetailsResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 7. Run All Tests</h3>
+            <button onclick="runAllTests()" style="background: #28a745;">Run Complete Test Suite</button>
+            <div id="allTestsResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let allProducts = [];
+        
+        async function checkSystemHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Checking system health...</p></div>';
+            
+            try {
+                // Check backend
+                const backendResponse = await fetch('http://localhost:5000/api/health');
+                const backendData = await backendResponse.json();
+                
+                // Check products API
+                const productsResponse = await fetch('http://localhost:5000/api/products?limit=1');
+                const productsData = await productsResponse.json();
+                
+                // Check frontend (try different ports)
+                let frontendStatus = 'Unknown';
+                try {
+                    const frontendResponse = await fetch('http://localhost:5174');
+                    frontendStatus = 'Running on 5174';
+                } catch {
+                    try {
+                        const frontendResponse2 = await fetch('http://localhost:5173');
+                        frontendStatus = 'Running on 5173';
+                    } catch {
+                        frontendStatus = 'Not accessible';
+                    }
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ System Health Check Complete</h4>
+                        <p><strong>Backend:</strong> ${backendResponse.ok ? '✅ Running' : '❌ Error'}</p>
+                        <p><strong>Products API:</strong> ${productsResponse.ok ? '✅ Working' : '❌ Error'}</p>
+                        <p><strong>Frontend:</strong> ${frontendStatus}</p>
+                        <p><strong>Database:</strong> ${productsData.products && productsData.products.length > 0 ? '✅ Connected with data' : '❌ No data'}</p>
+                    </div>
+                `;
+                
+                // Update summary
+                document.getElementById('backendStatus').innerHTML = backendResponse.ok ? '✅ Running' : '❌ Error';
+                document.getElementById('frontendStatus').innerHTML = frontendStatus;
+                document.getElementById('dbStatus').innerHTML = productsData.products && productsData.products.length > 0 ? '✅ Connected with data' : '❌ No data';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Health check failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testHomePageProducts() {
+            const resultDiv = document.getElementById('homeProductsResult');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading home page products...</p></div>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/products?limit=12&sort=newest');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Home Page Products Loaded</h4>
+                            <p><strong>Found:</strong> ${products.length} latest products</p>
+                        </div>
+                    `;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div class="product-grid">`;
+                        products.forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <img src="${product.images && product.images[0] ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                                         alt="${product.name}" class="product-image">
+                                    <h4>${index + 1}. ${product.name}</h4>
+                                    <p><strong>Price:</strong> ₹${product.price}</p>
+                                    <p><strong>Category:</strong> ${product.category}</p>
+                                    <p><strong>Stock:</strong> ${product.stock}</p>
+                                    <span class="status-badge ${product.isActive ? 'status-active' : 'status-inactive'}">
+                                        ${product.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                        resultDiv.innerHTML += `</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to load home page products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testAllProducts() {
+            const resultDiv = document.getElementById('allProductsResult');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all products...</p></div>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/products');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    allProducts = products; // Store for other tests
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ All Products Loaded</h4>
+                            <p><strong>Total Products:</strong> ${products.length}</p>
+                            <p><strong>Active Products:</strong> ${products.filter(p => p.isActive).length}</p>
+                            <p><strong>Categories:</strong> ${[...new Set(products.map(p => p.category))].join(', ')}</p>
+                        </div>
+                    `;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div class="product-grid">`;
+                        products.forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <img src="${product.images && product.images[0] ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                                         alt="${product.name}" class="product-image">
+                                    <h4>${index + 1}. ${product.name}</h4>
+                                    <p><strong>Price:</strong> ₹${product.price}</p>
+                                    <p><strong>Category:</strong> ${product.category}</p>
+                                    <p><strong>Stock:</strong> ${product.stock}</p>
+                                    <span class="status-badge ${product.isActive ? 'status-active' : 'status-inactive'}">
+                                        ${product.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                        resultDiv.innerHTML += `</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to load all products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testCategoryProducts(category) {
+            const resultDiv = document.getElementById('categoryProductsResult');
+            resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading ${category} products...</p></div>`;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/products?category=${category}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ ${category.charAt(0).toUpperCase() + category.slice(1)} Products Loaded</h4>
+                            <p><strong>Found:</strong> ${products.length} ${category} products</p>
+                        </div>
+                    `;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div class="product-grid">`;
+                        products.forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <img src="${product.images && product.images[0] ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                                         alt="${product.name}" class="product-image">
+                                    <h4>${index + 1}. ${product.name}</h4>
+                                    <p><strong>Price:</strong> ₹${product.price}</p>
+                                    <p><strong>Category:</strong> ${product.category}</p>
+                                    <p><strong>Stock:</strong> ${product.stock}</p>
+                                    <span class="status-badge ${product.isActive ? 'status-active' : 'status-inactive'}">
+                                        ${product.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                        resultDiv.innerHTML += `</div>`;
+                    } else {
+                        resultDiv.innerHTML += `<div class="info">No ${category} products found</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Failed to load ${category} products: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testSearchProducts(searchTerm) {
+            const resultDiv = document.getElementById('searchProductsResult');
+            resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Searching for "${searchTerm}"...</p></div>`;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/products?search=${searchTerm}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data || [];
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Search Results for "${searchTerm}"</h4>
+                            <p><strong>Found:</strong> ${products.length} products matching "${searchTerm}"</p>
+                        </div>
+                    `;
+                    
+                    if (products.length > 0) {
+                        resultDiv.innerHTML += `<div class="product-grid">`;
+                        products.forEach((product, index) => {
+                            resultDiv.innerHTML += `
+                                <div class="product-item">
+                                    <img src="${product.images && product.images[0] ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                                         alt="${product.name}" class="product-image">
+                                    <h4>${index + 1}. ${product.name}</h4>
+                                    <p><strong>Price:</strong> ₹${product.price}</p>
+                                    <p><strong>Category:</strong> ${product.category}</p>
+                                    <p><strong>Stock:</strong> ${product.stock}</p>
+                                    <span class="status-badge ${product.isActive ? 'status-active' : 'status-inactive'}">
+                                        ${product.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                        resultDiv.innerHTML += `</div>`;
+                    } else {
+                        resultDiv.innerHTML += `<div class="info">No products found matching "${searchTerm}"</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Search failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testProductDetails() {
+            const resultDiv = document.getElementById('productDetailsResult');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading product details...</p></div>';
+            
+            try {
+                // First get a product ID
+                const productsResponse = await fetch('http://localhost:5000/api/products?limit=1');
+                const productsData = await productsResponse.json();
+                
+                if (productsResponse.ok && productsData.products && productsData.products.length > 0) {
+                    const productId = productsData.products[0]._id;
+                    
+                    // Then get product details
+                    const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        resultDiv.innerHTML = `
+                            <div class="success">
+                                <h4>✅ Product Details Loaded</h4>
+                            </div>
+                            <div class="product-item">
+                                <img src="${data.images && data.images[0] ? data.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                                     alt="${data.name}" class="product-image">
+                                <h3>${data.name}</h3>
+                                <p><strong>Price:</strong> ₹${data.price}</p>
+                                <p><strong>Category:</strong> ${data.category}</p>
+                                <p><strong>Stock:</strong> ${data.stock}</p>
+                                <p><strong>Description:</strong> ${data.description}</p>
+                                <span class="status-badge ${data.isActive ? 'status-active' : 'status-inactive'}">
+                                    ${data.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<div class="error">❌ Failed to get product details: ${data.message}</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ No products available to test details</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function runAllTests() {
+            const resultDiv = document.getElementById('allTestsResult');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Running complete test suite...</p></div>';
+            
+            const results = [];
+            
+            try {
+                // Test 1: Health Check
+                const healthResponse = await fetch('http://localhost:5000/api/health');
+                results.push(`Health Check: ${healthResponse.ok ? '✅ PASS' : '❌ FAIL'}`);
+                
+                // Test 2: All Products
+                const productsResponse = await fetch('http://localhost:5000/api/products');
+                const productsData = await productsResponse.json();
+                const productCount = productsData.products ? productsData.products.length : 0;
+                results.push(`All Products: ${productsResponse.ok ? `✅ PASS (${productCount} products)` : '❌ FAIL'}`);
+                
+                // Test 3: Home Page Products
+                const homeResponse = await fetch('http://localhost:5000/api/products?limit=12&sort=newest');
+                const homeData = await homeResponse.json();
+                const homeCount = homeData.products ? homeData.products.length : 0;
+                results.push(`Home Page Products: ${homeResponse.ok ? `✅ PASS (${homeCount} products)` : '❌ FAIL'}`);
+                
+                // Test 4: Category Products
+                const categoryResponse = await fetch('http://localhost:5000/api/products?category=sarees');
+                const categoryData = await categoryResponse.json();
+                const categoryCount = categoryData.products ? categoryData.products.length : 0;
+                results.push(`Category Products: ${categoryResponse.ok ? `✅ PASS (${categoryCount} sarees)` : '❌ FAIL'}`);
+                
+                // Test 5: Search Products
+                const searchResponse = await fetch('http://localhost:5000/api/products?search=cotton');
+                const searchData = await searchResponse.json();
+                const searchCount = searchData.products ? searchData.products.length : 0;
+                results.push(`Search Products: ${searchResponse.ok ? `✅ PASS (${searchCount} results)` : '❌ FAIL'}`);
+                
+                const passedTests = results.filter(r => r.includes('✅')).length;
+                const totalTests = results.length;
+                
+                resultDiv.innerHTML = `
+                    <div class="${passedTests === totalTests ? 'success' : 'error'}">
+                        <h4>${passedTests === totalTests ? '🎉 All Tests Passed!' : '⚠️ Some Tests Failed'}</h4>
+                        <p><strong>Results:</strong> ${passedTests}/${totalTests} tests passed</p>
+                        <ul>
+                            ${results.map(result => `<li>${result}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Test suite failed: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-run health check on page load
+        window.onload = function() {
+            checkSystemHealth();
+        };
+    </script>
+</body>
+</html> 

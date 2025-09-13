@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .payment-details {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            max-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment System Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Payment Settings API</h2>
+        <p>Test the payment settings endpoints to verify they work correctly.</p>
+        
+        <button class="test-button" onclick="testGetPaymentSettings()">Get Public Payment Settings</button>
+        <button class="test-button" onclick="testGetAdminPaymentSettings()">Get Admin Payment Settings (with token)</button>
+        <button class="test-button" onclick="testCreatePaymentSettings()">Create New Payment Settings</button>
+        
+        <div id="payment-settings-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Order Creation</h2>
+        <p>Test creating an order with payment method.</p>
+        
+        <button class="test-button" onclick="testCreateOrder()">Create Test Order</button>
+        
+        <div id="order-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Payment Complete</h2>
+        <p>Test marking payment as complete.</p>
+        
+        <input type="text" id="order-id" placeholder="Enter Order ID" style="padding: 8px; margin: 5px;">
+        <button class="test-button" onclick="testPaymentComplete()">Mark Payment Complete</button>
+        
+        <div id="payment-complete-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Display Payment Details</h2>
+        <p>Show the current active payment settings for users.</p>
+        
+        <button class="test-button" onclick="displayPaymentDetails()">Show Payment Details</button>
+        
+        <div id="payment-details-display"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        
+        // Test token (you'll need to replace this with a real token)
+        const TEST_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjY2NjY2NjY2NjY2NiIsImlzQWRtaW4iOnRydWUsImlhdCI6MTczMjgwMDAwMCwiZXhwIjoxNzMyODg2NDAwfQ.example';
+
+        function displayResult(elementId, data, isError = false, isSuccess = false) {
+            const element = document.getElementById(elementId);
+            const className = isError ? 'result error' : isSuccess ? 'result success' : 'result';
+            element.innerHTML = `<div class="${className}"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+        }
+
+        async function testGetPaymentSettings() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/payment-settings`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('payment-settings-result', data, false, true);
+                } else {
+                    displayResult('payment-settings-result', data, true);
+                }
+            } catch (error) {
+                displayResult('payment-settings-result', { error: error.message }, true);
+            }
+        }
+
+        async function testGetAdminPaymentSettings() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/payment-settings/admin`, {
+                    headers: {
+                        'Authorization': `Bearer ${TEST_TOKEN}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('payment-settings-result', data, false, true);
+                } else {
+                    displayResult('payment-settings-result', data, true);
+                }
+            } catch (error) {
+                displayResult('payment-settings-result', { error: error.message }, true);
+            }
+        }
+
+        async function testCreatePaymentSettings() {
+            try {
+                const newSettings = {
+                    bankName: 'Test Bank',
+                    accountNumber: '9999999999',
+                    accountHolderName: 'Test Account',
+                    ifscCode: 'TEST0001234',
+                    branchName: 'Test Branch',
+                    upiId: 'test@upi',
+                    upiName: 'Test UPI',
+                    qrCodeImage: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://test@upi',
+                    gpayNumber: '9999999999',
+                    phonepeNumber: '9999999999',
+                    paytmNumber: '9999999999',
+                    paymentInstructions: 'Test payment instructions for testing purposes.'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/payment-settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${TEST_TOKEN}`
+                    },
+                    body: JSON.stringify(newSettings)
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('payment-settings-result', data, false, true);
+                } else {
+                    displayResult('payment-settings-result', data, true);
+                }
+            } catch (error) {
+                displayResult('payment-settings-result', { error: error.message }, true);
+            }
+        }
+
+        async function testCreateOrder() {
+            try {
+                const testOrder = {
+                    items: [
+                        {
+                            _id: '507f1f77bcf86cd799439011',
+                            name: 'Test Product',
+                            image: 'https://via.placeholder.com/150',
+                            price: 999,
+                            quantity: 1,
+                            size: 'M'
+                        }
+                    ],
+                    totalAmount: 1098, // 999 + 99 shipping
+                    shippingInfo: {
+                        fullName: 'Test User',
+                        email: 'test@example.com',
+                        phone: '9876543210',
+                        address: '123 Test Street',
+                        city: 'Test City',
+                        state: 'Test State',
+                        pincode: '123456'
+                    },
+                    paymentMethod: 'bank_transfer'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${TEST_TOKEN}`
+                    },
+                    body: JSON.stringify(testOrder)
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('order-result', data, false, true);
+                    // Store the order ID for payment complete test
+                    if (data.order && data.order._id) {
+                        document.getElementById('order-id').value = data.order._id;
+                    }
+                } else {
+                    displayResult('order-result', data, true);
+                }
+            } catch (error) {
+                displayResult('order-result', { error: error.message }, true);
+            }
+        }
+
+        async function testPaymentComplete() {
+            const orderId = document.getElementById('order-id').value;
+            if (!orderId) {
+                alert('Please enter an Order ID first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders/${orderId}/payment-complete`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${TEST_TOKEN}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('payment-complete-result', data, false, true);
+                } else {
+                    displayResult('payment-complete-result', data, true);
+                }
+            } catch (error) {
+                displayResult('payment-complete-result', { error: error.message }, true);
+            }
+        }
+
+        async function displayPaymentDetails() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/payment-settings`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const displayDiv = document.getElementById('payment-details-display');
+                    displayDiv.innerHTML = `
+                        <div class="payment-details">
+                            <h3>Active Payment Settings</h3>
+                            <p><strong>Bank:</strong> ${data.bankName}</p>
+                            <p><strong>Account Number:</strong> ${data.accountNumber}</p>
+                            <p><strong>Account Holder:</strong> ${data.accountHolderName}</p>
+                            <p><strong>IFSC Code:</strong> ${data.ifscCode}</p>
+                            <p><strong>UPI ID:</strong> ${data.upiId}</p>
+                            <p><strong>UPI Name:</strong> ${data.upiName || 'N/A'}</p>
+                            <p><strong>Google Pay:</strong> ${data.gpayNumber || 'N/A'}</p>
+                            <p><strong>PhonePe:</strong> ${data.phonepeNumber || 'N/A'}</p>
+                            <p><strong>Paytm:</strong> ${data.paytmNumber || 'N/A'}</p>
+                            <p><strong>Instructions:</strong> ${data.paymentInstructions}</p>
+                            
+                            ${data.qrCodeImage ? `
+                                <div class="qr-code">
+                                    <h4>QR Code for Payment</h4>
+                                    <img src="${data.qrCodeImage}" alt="Payment QR Code">
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    displayDiv.innerHTML = `<div class="result error">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('payment-details-display').innerHTML = 
+                    `<div class="result error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-run some tests on page load
+        window.onload = function() {
+            console.log('Payment System Test Page Loaded');
+            console.log('API Base URL:', API_BASE_URL);
+            console.log('Test Token:', TEST_TOKEN);
+        };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,24 @@
+{
+  "name": "janu-collections",
+  "version": "1.0.0",
+  "description": "Full-stack e-commerce website for women's clothing",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon backend/server.js",
+    "client": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "node backend/server.js",
+    "install-client": "cd frontend && npm install",
+    "install-server": "npm install",
+    "install-all": "npm run install-server && npm run install-client"
+  },
+  "keywords": ["ecommerce", "react", "node", "mongodb", "stripe"],
+  "author": "Janu Collections",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2"
+  }
+}
