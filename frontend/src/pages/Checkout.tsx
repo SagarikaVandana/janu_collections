@@ -211,6 +211,48 @@ const Checkout: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Door Number
+                    </label>
+                    <input
+                      type="text"
+                      name="doorNumber"
+                      value={shippingInfo.doorNumber}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="e.g., 123, A-45"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Street
+                    </label>
+                    <input
+                      type="text"
+                      name="street"
+                      value={shippingInfo.street}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="e.g., Main Street, Gandhi Road"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Village
+                    </label>
+                    <input
+                      type="text"
+                      name="village"
+                      value={shippingInfo.village}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="e.g., Village Name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       City
                     </label>
                     <input
