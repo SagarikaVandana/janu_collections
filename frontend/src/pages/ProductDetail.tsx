@@ -46,7 +46,7 @@ const ProductDetail: React.FC = () => {
     }
     
     for (let i = 0; i < quantity; i++) {
-      addToCart(product, selectedSize);
+      addToCart(product, selectedSize, selectedImage);
     }
     
     toast.success(`${product.name} added to cart!`);

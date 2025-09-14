@@ -12,12 +12,12 @@ interface CartItem {
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: any, size: string) => void;
+  addToCart: (product: any, size: string, selectedImageIndex?: number) => void;
   removeFromCart: (productId: string, size: string) => void;
   updateQuantity: (productId: string, size: string, quantity: number) => void;
   clearCart: () => void;
-  getTotalPrice: () => number;
-  getTotalItems: () => number;
+  totalItems: number;
+  totalAmount: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -48,7 +48,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product: any, size: string) => {
+  const addToCart = (product: any, size: string, selectedImageIndex: number = 0) => {
     setCartItems(prev => {
       const existingItem = prev.find(item => item._id === product._id && item.size === size);
       
@@ -80,7 +80,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         _id: product._id,
         name: product.name,
         price: product.price,
-        image: product.images[0],
+        image: product.images[selectedImageIndex] || product.images[0],
         size,
         quantity: 1,
       }];
@@ -137,8 +137,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     removeFromCart,
     updateQuantity,
     clearCart,
-    getTotalPrice,
-    getTotalItems,
+    totalItems: getTotalItems(),
+    totalAmount: getTotalPrice(),
   };
 
   return (
