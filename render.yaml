@@ -1,11 +1,11 @@
 services:
-  # Backend Service
+  # Full-Stack Service (Backend + Frontend)
   - type: web
-    name: janu-collections-backend
+    name: janu-collections-fullstack
     env: node
     plan: starter
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -15,8 +15,6 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: FRONTEND_URL
-        sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: ADMIN_EMAIL
@@ -25,15 +23,6 @@ services:
         sync: false
       - key: ADMIN_NAME
         sync: false
+      - key: UPLOADS_PATH
+        value: /opt/render/project/src/uploads
     healthCheckPath: /api/health
-
-  # Frontend Service (Static Site)
-  - type: static_site
-    name: janu-collections-frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false
-      - key: VITE_STRIPE_PUBLISHABLE_KEY
-        sync: false

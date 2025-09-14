@@ -10,7 +10,7 @@
     "server": "nodemon server.js",
     "seed": "node scripts/seedProducts.js",
     "seed:admin": "node scripts/seedAdmin.js",
-    "build": "echo 'Backend build complete - no build step required for Node.js'"
+    "build": "cd ../frontend && npm install && npm run build && echo 'Frontend built and ready to serve from backend'"
   },
   "keywords": [
     "ecommerce",
