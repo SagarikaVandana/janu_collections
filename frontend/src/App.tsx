@@ -22,6 +22,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminNewsletter from './pages/admin/AdminNewsletter';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminReports from './pages/admin/AdminReports';
+import AdminUsers from './pages/admin/AdminUsers';
 import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -105,6 +106,11 @@ function App() {
           <Route path="/admin/reports" element={
             <AdminRoute>
               <AdminReports />
+            </AdminRoute>
+          } />
+          <Route path="/admin/users" element={
+            <AdminRoute>
+              <AdminUsers />
             </AdminRoute>
           } />
         </Routes>

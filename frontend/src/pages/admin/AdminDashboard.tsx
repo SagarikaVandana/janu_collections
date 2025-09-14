@@ -199,7 +199,17 @@ const AdminDashboard: React.FC = () => {
             >
               <div className="flex items-center">
                 <Mail className="h-5 w-5 text-primary-500 mr-3" />
-                <span className="font-medium">Newsletter Management</span>
+                <span className="font-medium">Newsletter</span>
+              </div>
+            </Link>
+            
+            <Link
+              to="/admin/users"
+              className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center">
+                <Users className="h-5 w-5 text-primary-500 mr-3" />
+                <span className="font-medium">Manage Users</span>
               </div>
             </Link>
             

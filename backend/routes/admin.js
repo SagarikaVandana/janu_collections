@@ -11,6 +11,62 @@ const router = express.Router();
 // Apply authentication and admin middleware to all routes
 router.use(authenticateToken, requireAdmin);
 
+// Get all users with their addresses (admin)
+router.get('/users', async (req, res) => {
+  try {
+    const { page = 1, limit = 20, search = '' } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Build search query
+    let searchQuery = { isAdmin: false };
+    if (search) {
+      searchQuery = {
+        ...searchQuery,
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { phone: { $regex: search, $options: 'i' } },
+          { 'address.city': { $regex: search, $options: 'i' } },
+          { 'address.state': { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+    
+    const [users, totalUsers] = await Promise.all([
+      User.find(searchQuery)
+        .select('-password')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .lean(),
+      User.countDocuments(searchQuery)
+    ]);
+    
+    // Format addresses for better display
+    const formattedUsers = users.map(user => ({
+      ...user,
+      formattedAddress: user.address ? 
+        `${user.address.street || ''}, ${user.address.city || ''}, ${user.address.state || ''} ${user.address.pincode || ''}`.replace(/,\s*,/g, ',').replace(/^,\s*|,\s*$/g, '') || 'No address provided'
+        : 'No address provided',
+      addressComplete: user.address && user.address.street && user.address.city && user.address.state && user.address.pincode
+    }));
+    
+    res.json({
+      users: formattedUsers,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalUsers / parseInt(limit)),
+        totalUsers,
+        hasNext: skip + parseInt(limit) < totalUsers,
+        hasPrev: parseInt(page) > 1
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Error fetching users' });
+  }
+});
+
 // Dashboard stats
 router.get('/dashboard-stats', async (req, res) => {
   try {
