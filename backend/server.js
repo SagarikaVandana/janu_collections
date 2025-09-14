@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS configuration - MUST be before routes
 const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? (process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
+  ? (process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : true) // Allow same-origin in production
   : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
 
 app.use(cors({
