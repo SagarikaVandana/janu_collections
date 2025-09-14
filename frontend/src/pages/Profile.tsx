@@ -25,15 +25,17 @@ const Profile: React.FC = () => {
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
+    phone: (user as any)?.phone || '',
+    address: (user as any)?.address?.street || '',
+    city: (user as any)?.address?.city || '',
+    state: (user as any)?.address?.state || '',
+    pincode: (user as any)?.address?.pincode || '',
+    country: (user as any)?.address?.country || 'India',
   });
 
   useEffect(() => {
     fetchUserStats();
+    fetchUserProfile();
   }, []);
 
   const fetchUserStats = async () => {
@@ -47,6 +49,30 @@ const Profile: React.FC = () => {
     }
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userData = response.data;
+      setProfileData({
+        name: userData.name || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+        address: userData.address?.street || '',
+        city: userData.address?.city || '',
+        state: userData.address?.state || '',
+        pincode: userData.address?.pincode || '',
+        country: userData.address?.country || 'India',
+      });
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfileData({
       ...profileData,
@@ -54,9 +80,35 @@ const Profile: React.FC = () => {
     });
   };
 
-  const handleSave = () => {
-    // Save profile data
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put('/api/auth/profile', {
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        address: {
+          street: profileData.address,
+          city: profileData.city,
+          state: profileData.state,
+          pincode: profileData.pincode,
+          country: profileData.country,
+        },
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      alert('Profile updated successfully!');
+      setIsEditing(false);
+      
+      // Refresh user profile data
+      await fetchUserProfile();
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      alert(error.response?.data?.message || 'Error updating profile');
+    }
   };
 
   const handleQuickAction = (action: string) => {
@@ -249,6 +301,21 @@ const Profile: React.FC = () => {
                   disabled={!isEditing}
                   className={`input-field ${!isEditing ? 'bg-gray-50' : ''}`}
                   placeholder="Enter pincode"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  name="country"
+                  value={profileData.country}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  className={`input-field ${!isEditing ? 'bg-gray-50' : ''}`}
+                  placeholder="Enter country"
                 />
               </div>
             </div>

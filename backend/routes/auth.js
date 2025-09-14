@@ -200,6 +200,66 @@ router.get('/stats', authenticateToken, async (req, res) => {
   }
 });
 
+// Update user profile
+router.put('/profile', authenticateToken, async (req, res) => {
+  try {
+    const { name, email, phone, address } = req.body;
+    const userId = req.user.userId;
+
+    // Input validation
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name and email are required' });
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
+    }
+
+    // Check if email is already taken by another user
+    const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email is already registered to another account' });
+    }
+
+    // Prepare update data
+    const updateData = {
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      phone: phone?.trim() || '',
+    };
+
+    // Handle address fields
+    if (address) {
+      updateData.address = {
+        street: address.street?.trim() || '',
+        city: address.city?.trim() || '',
+        state: address.state?.trim() || '',
+        pincode: address.pincode?.trim() || '',
+        country: address.country?.trim() || 'India'
+      };
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      userId, 
+      updateData, 
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ 
+      message: 'Profile updated successfully',
+      user: updatedUser 
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: 'Error updating profile' });
+  }
+});
+
 // Change password
 router.put('/change-password', authenticateToken, async (req, res) => {
   try {
