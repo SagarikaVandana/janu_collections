@@ -69,8 +69,6 @@ const ProductDetail: React.FC = () => {
   };
 
   const features = [
-    { icon: Truck, text: 'Free shipping above ₹999' },
-    { icon: RefreshCw, text: '7-day easy returns' },
     { icon: Shield, text: 'Secure payment' },
   ];
 

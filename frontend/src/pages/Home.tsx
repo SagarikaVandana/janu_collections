@@ -95,11 +95,6 @@ const Home: React.FC = () => {
 
   const features = [
     {
-      icon: Truck,
-      title: 'Free Shipping',
-      description: 'Free delivery on orders above ₹999',
-    },
-    {
       icon: Shield,
       title: 'Secure Payment',
       description: '100% secure payment processing',
@@ -201,20 +196,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <motion.div
-              initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-              className="text-center p-6"
-            >
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Truck className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Free shipping on orders above ₹2000</p>
-            </motion.div>
-
+  
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
