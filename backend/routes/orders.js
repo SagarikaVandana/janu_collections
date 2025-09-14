@@ -85,7 +85,9 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 
     // Validate shipping information
-    if (!shippingInfo || !shippingInfo.fullName || !shippingInfo.email || !shippingInfo.phone || !shippingInfo.address || !shippingInfo.city || !shippingInfo.state || !shippingInfo.pincode) {
+    if (!shippingInfo || !shippingInfo.fullName || !shippingInfo.email || !shippingInfo.phone || 
+        !shippingInfo.doorNumber || !shippingInfo.street || !shippingInfo.village ||
+        !shippingInfo.city || !shippingInfo.state || !shippingInfo.pincode) {
       console.error('Missing shipping information:', shippingInfo);
       return res.status(400).json({ 
         message: 'Complete shipping information is required',
