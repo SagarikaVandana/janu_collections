@@ -110,6 +110,11 @@ const Cart: React.FC = () => {
             </div>
           </div>
           
+          {getTotalPrice() < 999 && (
+            <p className="text-sm text-gray-600">
+              Add ₹{999 - getTotalPrice()} more for free shipping!
+            </p>
+          )}
           
           <div className="pt-4">
             <Link
