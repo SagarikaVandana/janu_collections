@@ -1,4 +1,14 @@
-# 🚀 Single Server Deployment Guide - Frontend + Backend
+# 🚀 Single Server Deployment Guide for Janu Collections
+
+This guide covers deploying the full-stack Janu Collections application on a single server using Render.com.
+
+## 🔧 Recent Fixes Applied
+
+### CORS Configuration Fix (Latest)
+- **Issue**: Frontend could not connect to backend API after deployment
+- **Root Cause**: CORS configuration in production mode was not allowing same-origin requests
+- **Solution**: Updated `backend/server.js` to allow same-origin requests in production when `FRONTEND_URL` is not set
+- **Status**: ✅ Fixed and deployed
 
 ## ✅ **Configuration Complete**
 

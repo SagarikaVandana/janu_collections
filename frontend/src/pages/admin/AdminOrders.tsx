@@ -157,6 +157,12 @@ const AdminOrders: React.FC = () => {
                   Total
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Address
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Payment
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -202,6 +208,19 @@ const AdminOrders: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {order.shippingInfo.phone}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {order.shippingInfo.address}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {order.shippingInfo.city}, {order.shippingInfo.state} {order.shippingInfo.pincode}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 capitalize">
                       {order.paymentMethod.replace('_', ' ')}
                     </div>
@@ -230,6 +249,8 @@ const AdminOrders: React.FC = () => {
                           setShowModal(true);
                         }}
                         className="text-primary-600 hover:text-primary-900"
+                        title="View order details"
+                        aria-label="View order details"
                     >
                       <Eye className="h-4 w-4" />
                     </button>
@@ -237,6 +258,8 @@ const AdminOrders: React.FC = () => {
                         value={order.status}
                         onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
                         className="text-xs border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        title="Update order status"
+                        aria-label="Update order status"
                       >
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
