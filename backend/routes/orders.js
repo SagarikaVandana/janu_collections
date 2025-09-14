@@ -83,6 +83,38 @@ router.post('/', authenticateToken, async (req, res) => {
       });
     }
 
+    // Update user profile with shipping address if it's more complete than existing address
+    try {
+      const user = await User.findById(req.user.userId);
+      if (user && shippingInfo) {
+        const shouldUpdateAddress = !user.address || 
+          !user.address.street || 
+          !user.address.city || 
+          !user.address.state || 
+          !user.address.pincode;
+
+        if (shouldUpdateAddress && shippingInfo.address && shippingInfo.city && shippingInfo.state && shippingInfo.pincode) {
+          // Update user profile with shipping information
+          const updateData = {
+            phone: shippingInfo.phone || user.phone,
+            address: {
+              street: shippingInfo.address,
+              city: shippingInfo.city,
+              state: shippingInfo.state,
+              pincode: shippingInfo.pincode,
+              country: 'India'
+            }
+          };
+
+          await User.findByIdAndUpdate(req.user.userId, updateData);
+          console.log('Updated user profile with shipping address');
+        }
+      }
+    } catch (profileUpdateError) {
+      console.error('Error updating user profile with shipping info:', profileUpdateError);
+      // Don't fail the order creation if profile update fails
+    }
+
     // Create order
     const order = new Order({
       user: req.user.userId,

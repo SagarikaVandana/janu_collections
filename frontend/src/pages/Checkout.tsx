@@ -15,11 +15,11 @@ const Checkout: React.FC = () => {
   const [shippingInfo, setShippingInfo] = useState({
     fullName: user?.name || '',
     email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
+    phone: (user as any)?.phone || '',
+    address: (user as any)?.address?.street || '',
+    city: (user as any)?.address?.city || '',
+    state: (user as any)?.address?.state || '',
+    pincode: (user as any)?.address?.pincode || '',
   });
 
   const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0) + 99;
