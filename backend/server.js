@@ -55,11 +55,38 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", "https:", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
     },
   },
+  // Disable problematic headers that trigger Attribution Reporting API
+  crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
+
+// Add headers to prevent Attribution Reporting API violations
+app.use((req, res, next) => {
+  // Explicitly disable Attribution Reporting API
+  res.setHeader('Permissions-Policy', 'attribution-reporting=()');
+  
+  // Remove any attribution reporting headers if they exist
+  res.removeHeader('Attribution-Reporting-Eligible');
+  res.removeHeader('Attribution-Reporting-Support');
+  res.removeHeader('Attribution-Reporting-Register-OS-Trigger');
+  res.removeHeader('Attribution-Reporting-Register-OS-Source');
+  res.removeHeader('Attribution-Reporting-Register-Trigger');
+  res.removeHeader('Attribution-Reporting-Register-Source');
+  
+  // Add additional privacy-focused headers
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  next();
+});
 
 // Rate limiting with environment configuration
 const limiter = rateLimit({
