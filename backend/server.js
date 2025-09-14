@@ -91,12 +91,35 @@ app.use((req, res, next) => {
 // Rate limiting with environment configuration
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP
-  message: 'Too many requests from this IP, please try again later.',
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 500, // Increased limit for production
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+    retryAfter: Math.ceil((parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000) / 1000)
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Skip rate limiting for health checks
+  skip: (req) => req.path === '/api/health',
+});
+
+// Apply general rate limiting
+app.use(limiter);
+
+// More lenient rate limiting for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 10, // 10 attempts per 5 minutes per IP for auth endpoints
+  message: {
+    error: 'Too many authentication attempts, please try again in 5 minutes.',
+    retryAfter: 300
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use(limiter);
+
+// Apply auth-specific rate limiting to auth routes
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // Static files - use environment variable for uploads path in production
 const uploadsPath = process.env.UPLOADS_PATH || path.join(__dirname, '../uploads');
