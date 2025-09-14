@@ -4,7 +4,7 @@ services:
     name: janu-collections-fullstack
     env: node
     plan: starter
-    buildCommand: npm install && npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend
+    buildCommand: bash build.sh
     startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
