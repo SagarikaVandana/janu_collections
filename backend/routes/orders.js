@@ -41,6 +41,7 @@ router.post('/', authenticateToken, async (req, res) => {
     
     console.log('Creating order for user:', req.user.userId);
     console.log('Order data:', { items: items.length, totalAmount, paymentMethod });
+    console.log('Shipping info received:', shippingInfo);
 
     // Validate items
     if (!items || items.length === 0) {
@@ -80,6 +81,15 @@ router.post('/', authenticateToken, async (req, res) => {
         message: 'Amount mismatch',
         calculated: calculatedTotal,
         provided: totalAmount
+      });
+    }
+
+    // Validate shipping information
+    if (!shippingInfo || !shippingInfo.fullName || !shippingInfo.email || !shippingInfo.phone || !shippingInfo.address || !shippingInfo.city || !shippingInfo.state || !shippingInfo.pincode) {
+      console.error('Missing shipping information:', shippingInfo);
+      return res.status(400).json({ 
+        message: 'Complete shipping information is required',
+        received: shippingInfo
       });
     }
 
@@ -131,6 +141,7 @@ router.post('/', authenticateToken, async (req, res) => {
     });
 
     await order.save();
+    console.log('Order saved successfully with shipping info:', order.shippingInfo);
 
     res.status(201).json({
       message: 'Order created successfully',

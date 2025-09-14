@@ -37,18 +37,37 @@ const Checkout: React.FC = () => {
     setLoading(true);
 
     try {
+      // Validate shipping info before sending
+      if (!shippingInfo.fullName || !shippingInfo.email || !shippingInfo.phone || 
+          !shippingInfo.address || !shippingInfo.city || !shippingInfo.state || !shippingInfo.pincode) {
+        toast.error('Please fill in all shipping information fields');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Submitting order with shipping info:', shippingInfo);
+
       const orderData = {
         items: cartItems,
         totalAmount,
-        shippingInfo,
+        shippingInfo: {
+          fullName: shippingInfo.fullName.trim(),
+          email: shippingInfo.email.trim(),
+          phone: shippingInfo.phone.trim(),
+          address: shippingInfo.address.trim(),
+          city: shippingInfo.city.trim(),
+          state: shippingInfo.state.trim(),
+          pincode: shippingInfo.pincode.trim(),
+        },
         paymentMethod,
       };
       
       const response = await axios.post('/api/orders', orderData);
 
       if (response.status === 201) {
-      clearCart();
+        clearCart();
         toast.success('Order placed successfully! Please complete your payment.');
+        console.log('Order created successfully:', response.data.order);
       
         // Redirect to payment page for transaction number confirmation
         navigate(`/payment/${response.data.order._id}`);
@@ -57,6 +76,11 @@ const Checkout: React.FC = () => {
       console.error('Order creation error:', error);
       const message = error.response?.data?.message || 'Failed to place order';
       toast.error(message);
+      
+      // Log detailed error for debugging
+      if (error.response?.data) {
+        console.error('Error details:', error.response.data);
+      }
     } finally {
       setLoading(false);
     }
