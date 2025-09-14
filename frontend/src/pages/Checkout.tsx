@@ -169,6 +169,7 @@ const Checkout: React.FC = () => {
             {/* Shipping Information */}
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Shipping Information</h3>
+                {/* Updated with detailed address fields: Door Number, Street, Village */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
