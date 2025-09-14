@@ -16,7 +16,10 @@ interface Order {
     fullName: string;
     email: string;
     phone: string;
-    address: string;
+    address?: string;
+    doorNumber?: string;
+    street?: string;
+    village?: string;
     city: string;
     state: string;
     pincode: string;
@@ -214,7 +217,10 @@ const AdminOrders: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {order.shippingInfo.address}
+                      {order.shippingInfo.doorNumber && order.shippingInfo.street && order.shippingInfo.village 
+                        ? `${order.shippingInfo.doorNumber}, ${order.shippingInfo.street}, ${order.shippingInfo.village}`
+                        : order.shippingInfo.address || 'Address not available'
+                      }
                     </div>
                     <div className="text-xs text-gray-500">
                       {order.shippingInfo.city}, {order.shippingInfo.state} {order.shippingInfo.pincode}

@@ -16,7 +16,9 @@ const Checkout: React.FC = () => {
     fullName: user?.name || '',
     email: user?.email || '',
     phone: (user as any)?.phone || '',
-    address: (user as any)?.address?.street || '',
+    doorNumber: (user as any)?.address?.doorNumber || '',
+    street: (user as any)?.address?.street || '',
+    village: (user as any)?.address?.village || '',
     city: (user as any)?.address?.city || '',
     state: (user as any)?.address?.state || '',
     pincode: (user as any)?.address?.pincode || '',
@@ -39,7 +41,8 @@ const Checkout: React.FC = () => {
     try {
       // Validate shipping info before sending
       if (!shippingInfo.fullName || !shippingInfo.email || !shippingInfo.phone || 
-          !shippingInfo.address || !shippingInfo.city || !shippingInfo.state || !shippingInfo.pincode) {
+          !shippingInfo.doorNumber || !shippingInfo.street || !shippingInfo.village ||
+          !shippingInfo.city || !shippingInfo.state || !shippingInfo.pincode) {
         toast.error('Please fill in all shipping information fields');
         setLoading(false);
         return;
@@ -54,7 +57,9 @@ const Checkout: React.FC = () => {
           fullName: shippingInfo.fullName.trim(),
           email: shippingInfo.email.trim(),
           phone: shippingInfo.phone.trim(),
-          address: shippingInfo.address.trim(),
+          doorNumber: shippingInfo.doorNumber.trim(),
+          street: shippingInfo.street.trim(),
+          village: shippingInfo.village.trim(),
           city: shippingInfo.city.trim(),
           state: shippingInfo.state.trim(),
           pincode: shippingInfo.pincode.trim(),
@@ -215,34 +220,21 @@ const Checkout: React.FC = () => {
                       onChange={handleInputChange}
                       required
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={shippingInfo.address}
-                    onChange={handleInputChange}
-                    required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    State
-                  </label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={shippingInfo.state}
-                    onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={shippingInfo.state}
+                      onChange={handleInputChange}
                       required
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
+                    />
+                  </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Pincode

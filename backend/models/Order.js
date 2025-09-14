@@ -41,7 +41,15 @@ const shippingInfoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
+  doorNumber: {
+    type: String,
+    required: true,
+  },
+  street: {
+    type: String,
+    required: true,
+  },
+  village: {
     type: String,
     required: true,
   },
