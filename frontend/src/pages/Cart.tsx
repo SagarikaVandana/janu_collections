@@ -97,9 +97,9 @@ const Cart: React.FC = () => {
           </div>
           
           {getTotalItems() >= 5 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="text-sm text-yellow-800">
-                <strong>Cart Limit Reached:</strong> Maximum 5 items allowed. Complete your purchase to add more items.
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-sm text-red-800">
+                <strong>Cart Limit Reached:</strong> Maximum 5 items allowed. Remove items to proceed to checkout.
               </p>
             </div>
           )}
@@ -114,12 +114,22 @@ const Cart: React.FC = () => {
           </div>
           
           <div className="pt-4">
-            <Link
-              to="/checkout"
-              className="w-full btn-primary block text-center py-3"
-            >
-              Proceed to Checkout
-            </Link>
+            {getTotalItems() >= 5 ? (
+              <button
+                disabled
+                className="w-full bg-gray-400 text-white py-3 rounded-lg cursor-not-allowed opacity-60"
+                title="Remove items to proceed to checkout"
+              >
+                Checkout Disabled - Remove Items
+              </button>
+            ) : (
+              <Link
+                to="/checkout"
+                className="w-full btn-primary block text-center py-3"
+              >
+                Proceed to Checkout
+              </Link>
+            )}
           </div>
           
           <div className="text-center">
