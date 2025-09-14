@@ -4,8 +4,8 @@ services:
     name: janu-collections-fullstack
     env: node
     plan: starter
-    buildCommand: bash build.sh
-    startCommand: cd backend && npm start
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: node backend/server.js
     envVars:
       - key: NODE_ENV
         value: production
