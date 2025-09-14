@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 
 const Cart: React.FC = () => {
-  const { cartItems, updateQuantity, removeFromCart, getTotalPrice, getTotalItems } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, totalAmount, totalItems } = useCart();
 
   if (cartItems.length === 0) {
     return (
@@ -92,11 +92,11 @@ const Cart: React.FC = () => {
       <div className="mt-8 card p-6">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-lg text-gray-600">Items ({getTotalItems()})</span>
-            <span className="text-lg font-semibold">₹{getTotalPrice()}</span>
+            <span className="text-lg text-gray-600">Items ({totalItems})</span>
+            <span className="text-lg font-semibold">₹{totalAmount}</span>
           </div>
           
-          {getTotalItems() >= 5 && (
+          {totalItems >= 5 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <p className="text-sm text-red-800">
                 <strong>Cart Limit Reached:</strong> Maximum 5 items allowed. Remove items to proceed to checkout.
@@ -108,13 +108,13 @@ const Cart: React.FC = () => {
             <div className="flex justify-between items-center">
               <span className="text-xl font-bold text-gray-900">Total</span>
               <span className="text-xl font-bold text-gray-900">
-                ₹{getTotalPrice()}
+                ₹{totalAmount}
               </span>
             </div>
           </div>
           
           <div className="pt-4">
-            {getTotalItems() >= 5 ? (
+            {totalItems >= 5 ? (
               <button
                 disabled
                 className="w-full bg-gray-400 text-white py-3 rounded-lg cursor-not-allowed opacity-60"
