@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import toast from 'react-hot-toast';
 
 interface CartItem {
   _id: string;
@@ -52,11 +53,27 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const existingItem = prev.find(item => item._id === product._id && item.size === size);
       
       if (existingItem) {
+        // Check if increasing quantity would exceed limit
+        const newQuantity = existingItem.quantity + 1;
+        const totalItems = prev.reduce((total, item) => total + item.quantity, 0);
+        
+        if (totalItems >= 5) {
+          toast.error('Maximum 5 items allowed in cart. Complete your purchase to add more items.');
+          return prev;
+        }
+        
         return prev.map(item =>
           item._id === product._id && item.size === size
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQuantity }
             : item
         );
+      }
+      
+      // Check if adding new item would exceed limit
+      const totalItems = prev.reduce((total, item) => total + item.quantity, 0);
+      if (totalItems >= 5) {
+        toast.error('Maximum 5 items allowed in cart. Complete your purchase to add more items.');
+        return prev;
       }
       
       return [...prev, {
@@ -80,13 +97,26 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return;
     }
     
-    setCartItems(prev =>
-      prev.map(item =>
+    setCartItems(prev => {
+      // Calculate total items if this update goes through
+      const totalItems = prev.reduce((total, item) => {
+        if (item._id === productId && item.size === size) {
+          return total + quantity;
+        }
+        return total + item.quantity;
+      }, 0);
+      
+      if (totalItems > 5) {
+        toast.error('Maximum 5 items allowed in cart. Complete your purchase to add more items.');
+        return prev;
+      }
+      
+      return prev.map(item =>
         item._id === productId && item.size === size
           ? { ...item, quantity }
           : item
-      )
-    );
+      );
+    });
   };
 
   const clearCart = () => {

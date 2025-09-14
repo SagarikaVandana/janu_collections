@@ -96,6 +96,14 @@ const Cart: React.FC = () => {
             <span className="text-lg font-semibold">₹{getTotalPrice()}</span>
           </div>
           
+          {getTotalItems() >= 5 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Cart Limit Reached:</strong> Maximum 5 items allowed. Complete your purchase to add more items.
+              </p>
+            </div>
+          )}
+          
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">
               <span className="text-xl font-bold text-gray-900">Total</span>
