@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Truck, Shield, RefreshCw, MessageCircle, Phone, Mail, MapPin, CheckCircle } from 'lucide-react';
+import { ArrowRight, Star, Truck, Shield, RefreshCw, MessageCircle, Phone, Mail, MapPin, CheckCircle, Headphones } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ProductCard from '../components/ProductCard';
 import WhatsAppContact from '../components/WhatsAppContact';
@@ -237,10 +237,13 @@ const Home: React.FC = () => {
               className="text-center p-4 lg:p-6 sm:col-span-2 lg:col-span-1"
             >
               <div className="w-12 h-12 lg:w-16 lg:h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4">
-                <RefreshCw className="h-6 w-6 lg:h-8 lg:w-8 text-pink-600" />
+                <Headphones className="h-6 w-6 lg:h-8 lg:w-8 text-pink-600" />
               </div>
-              <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2">Easy Returns</h3>
-              <p className="text-sm lg:text-base text-gray-600">Hassle-free returns within 7 days</p>
+              <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2">Customer Support</h3>
+              <div className="text-sm lg:text-base text-gray-600">
+                <p className="mb-1">24/7 live chat and WhatsApp support</p>
+                <p>Dedicated helpline for order-related queries</p>
+              </div>
             </motion.div>
           </div>
         </div>
