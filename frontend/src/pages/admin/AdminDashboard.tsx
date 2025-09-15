@@ -164,6 +164,7 @@ const AdminDashboard: React.FC = () => {
         <div className="card p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div className="space-y-3">
+            {/* Coupon Management - Added for discount functionality */}
             <Link
               to="/admin/products"
               className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
