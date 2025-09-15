@@ -174,7 +174,7 @@ const ProductDetail: React.FC = () => {
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-600">({product.rating} stars)</span>
+              <span className="text-sm text-gray-600">★ {product.rating}</span>
             </div>
           )}
 
