@@ -102,7 +102,7 @@ const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
     return (
       <div className="py-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="animate-pulse">
               <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
@@ -122,7 +122,7 @@ const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
   return (
     <div className="py-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {products.map((product, index) => (
           <motion.div
             key={product._id}
@@ -158,9 +158,9 @@ const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
             </Link>
 
             {/* Product Info */}
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <Link to={`/product/${product._id}`} className="block">
-                <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
                   {product.name}
                 </h3>
               </Link>
@@ -190,12 +190,12 @@ const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
 
               {/* Price */}
               <div className="flex items-center justify-between">
-                <span className="text-lg font-bold text-gray-900">
+                <span className="text-sm sm:text-lg font-bold text-gray-900">
                   ₹{product.price}
                 </span>
                 <Link
                   to={`/product/${product._id}`}
-                  className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-xs text-primary-600 hover:text-primary-700 font-medium hidden sm:block"
                 >
                   View Details
                 </Link>
