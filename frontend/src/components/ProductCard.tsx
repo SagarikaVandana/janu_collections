@@ -15,6 +15,7 @@ interface Product {
   category: string;
   rating?: number;
   sizes?: string[];
+  stock?: number;
 }
 
 interface ProductCardProps {
@@ -122,6 +123,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
           )}
         </div>
+
 
         {/* Add to Cart Button */}
         <button
