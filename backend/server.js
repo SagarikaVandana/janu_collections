@@ -183,6 +183,16 @@ mongoose.connection.on('error', (error) => {
   console.error('MongoDB error:', error);
 });
 
+// Health check endpoint (before other routes)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);

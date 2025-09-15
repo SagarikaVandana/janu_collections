@@ -37,7 +37,7 @@ router.post('/create-payment-intent', authenticateToken, [
 // Create new order
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { items, shippingInfo, paymentMethod, couponId } = req.body;
+    const { items, shippingInfo, paymentMethod, couponId, totalAmount } = req.body;
     
     console.log('Creating order for user:', req.user.userId);
     console.log('Order data:', { items: items.length, paymentMethod });
@@ -75,8 +75,8 @@ router.post('/', authenticateToken, async (req, res) => {
     const shippingCost = 99;
     calculatedTotal += shippingCost;
 
-    // Validate total amount
-    if (Math.abs(calculatedTotal - totalAmount) > 1) {
+    // Validate total amount (allow for small floating point differences)
+    if (totalAmount && Math.abs(calculatedTotal - totalAmount) > 1) {
       return res.status(400).json({ 
         message: 'Amount mismatch',
         calculated: calculatedTotal,
@@ -105,12 +105,14 @@ router.post('/', authenticateToken, async (req, res) => {
           !user.address.state || 
           !user.address.pincode;
 
-        if (shouldUpdateAddress && shippingInfo.address && shippingInfo.city && shippingInfo.state && shippingInfo.pincode) {
+        if (shouldUpdateAddress && shippingInfo.street && shippingInfo.city && shippingInfo.state && shippingInfo.pincode) {
           // Update user profile with shipping information
           const updateData = {
             phone: shippingInfo.phone || user.phone,
             address: {
-              street: shippingInfo.address,
+              doorNumber: shippingInfo.doorNumber,
+              street: shippingInfo.street,
+              village: shippingInfo.village,
               city: shippingInfo.city,
               state: shippingInfo.state,
               pincode: shippingInfo.pincode,
@@ -133,13 +135,13 @@ router.post('/', authenticateToken, async (req, res) => {
       items: orderItems,
       shippingInfo,
       paymentMethod,
-      totalAmount,
+      totalAmount: totalAmount || calculatedTotal,
       shippingCost,
       status: 'pending',
       // Only add paymentIntentId for Stripe payments
-      ...(paymentMethod === 'stripe' && { paymentIntentId: req.body.paymentIntentId }),
+      ...(paymentMethod === 'stripe' && req.body.paymentIntentId && { paymentIntentId: req.body.paymentIntentId }),
       // Add transaction number for non-Stripe payments
-      ...(paymentMethod !== 'stripe' && transactionNumber && { transactionNumber }),
+      ...(paymentMethod !== 'stripe' && req.body.transactionNumber && { transactionNumber: req.body.transactionNumber }),
     });
 
     await order.save();
@@ -151,7 +153,18 @@ router.post('/', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Order creation error:', error);
-    res.status(500).json({ message: 'Server error. Please try again later.' });
+    console.error('Error stack:', error.stack);
+    console.error('Request body:', req.body);
+    
+    // Send detailed error in development, generic in production
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error.message 
+      : 'Server error. Please try again later.';
+    
+    res.status(500).json({ 
+      message: errorMessage,
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
   }
 });
 
