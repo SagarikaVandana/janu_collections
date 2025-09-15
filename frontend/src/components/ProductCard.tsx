@@ -119,7 +119,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           
           {product.rating && product.rating > 0 && (
             <div className="flex items-center">
-              <span className="text-xs sm:text-sm text-gray-600">★ {product.rating}</span>
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`text-xs sm:text-sm ${
+                      star <= Math.floor(product.rating!)
+                        ? 'text-yellow-400'
+                        : star <= product.rating!
+                        ? 'text-yellow-400'
+                        : 'text-gray-300'
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>
