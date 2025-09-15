@@ -97,7 +97,7 @@ const Home: React.FC = () => {
     {
       icon: Truck,
       title: 'Free Shipping',
-      description: 'Free delivery on orders above ₹999',
+      description: 'Free delivery on orders above ₹8000',
     },
     {
       icon: Shield,
@@ -212,7 +212,7 @@ const Home: React.FC = () => {
                 <Truck className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Free shipping on orders above ₹2000</p>
+              <p className="text-gray-600">Free shipping on orders above ₹8000</p>
             </motion.div>
 
             <motion.div
