@@ -33,39 +33,55 @@ const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   useEffect(() => {
-    fetchRecommendedProducts();
-  }, [currentProductId, category]);
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        let url = '/api/products?sort=newest';
+        
+        // If we have a category, filter by it
+        if (category) {
+          url += `&category=${encodeURIComponent(category)}`;
+        }
+        
+        const response = await axios.get(url);
+        let recommendedProducts = response.data.products || [];
+        
+        // Filter out current product if provided
+        if (currentProductId) {
+          recommendedProducts = recommendedProducts.filter(
+            (product: Product) => product._id !== currentProductId
+          );
+        }
+        
+        // Shuffle and limit products for variety
+        const shuffled = recommendedProducts.sort(() => 0.5 - Math.random());
+        const limitedProducts = shuffled.slice(0, limit);
+        
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setProducts(limitedProducts);
+        }
+      } catch (error) {
+        console.error('Error fetching recommended products:', error);
+        if (isMounted) {
+          setProducts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
 
-  const fetchRecommendedProducts = async () => {
-    try {
-      setLoading(true);
-      let url = '/api/products?sort=newest';
-      
-      // If we have a category, filter by it
-      if (category) {
-        url += `&category=${encodeURIComponent(category)}`;
-      }
-      
-      const response = await axios.get(url);
-      let recommendedProducts = response.data.products || [];
-      
-      // Filter out current product if provided
-      if (currentProductId) {
-        recommendedProducts = recommendedProducts.filter(
-          (product: Product) => product._id !== currentProductId
-        );
-      }
-      
-      // Shuffle and limit products for variety
-      const shuffled = recommendedProducts.sort(() => 0.5 - Math.random());
-      setProducts(shuffled.slice(0, limit));
-    } catch (error) {
-      console.error('Error fetching recommended products:', error);
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [currentProductId, category, limit]);
+
 
   const handleWishlistToggle = (product: Product) => {
     if (isInWishlist(product._id)) {

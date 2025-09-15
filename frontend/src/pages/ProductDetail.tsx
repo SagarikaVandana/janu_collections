@@ -376,6 +376,7 @@ const ProductDetail: React.FC = () => {
       {/* Recommended Products Section */}
       <div className="mt-16 border-t pt-12">
         <RecommendedProducts 
+          key={`recommended-${product?._id}-${product?.category}`}
           currentProductId={product?._id}
           category={product?.category}
           title="Similar Products You May Like"
