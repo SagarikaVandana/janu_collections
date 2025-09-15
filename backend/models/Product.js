@@ -39,6 +39,28 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   }],
+  colorVariations: [{
+    color: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    colorCode: {
+      type: String,
+      trim: true,
+    },
+    images: [{
+      type: String,
+      required: true,
+    }],
+    isMainColor: {
+      type: Boolean,
+      default: false,
+    }
+  }],
+  mainImage: {
+    type: String,
+  },
   stock: {
     type: Number,
     default: 0,

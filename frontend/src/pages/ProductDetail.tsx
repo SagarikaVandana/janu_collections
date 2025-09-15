@@ -18,6 +18,8 @@ const ProductDetail: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+  const [selectedColorVariation, setSelectedColorVariation] = useState<any>(null);
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -31,17 +33,36 @@ const ProductDetail: React.FC = () => {
     try {
       const response = await axios.get(`/api/products/${id}`);
       setProduct(response.data);
+      
+      // Initialize sizes
       if (response.data.sizes?.length > 0) {
         setSelectedSize(response.data.sizes[0]);
       }
-      if (response.data.colors?.length > 0) {
+      
+      // Initialize color variations or fallback to legacy colors
+      if (response.data.colorVariations?.length > 0) {
+        const mainColor = response.data.colorVariations.find((cv: any) => cv.isMainColor) || response.data.colorVariations[0];
+        setSelectedColorVariation(mainColor);
+        setSelectedColor(mainColor.color);
+        setCurrentImages(mainColor.images.length > 0 ? mainColor.images : response.data.images);
+      } else if (response.data.colors?.length > 0) {
         setSelectedColor(response.data.colors[0]);
+        setCurrentImages(response.data.images);
+      } else {
+        setCurrentImages(response.data.images);
       }
     } catch (error) {
       console.error('Error fetching product:', error);
       navigate('/products');
     }
     setLoading(false);
+  };
+
+  const handleColorVariationChange = (variation: any) => {
+    setSelectedColorVariation(variation);
+    setSelectedColor(variation.color);
+    setCurrentImages(variation.images.length > 0 ? variation.images : product.images);
+    setSelectedImage(0); // Reset to first image of the new color
   };
 
   const handleAddToCart = () => {
@@ -104,15 +125,15 @@ const ProductDetail: React.FC = () => {
             className="aspect-square overflow-hidden rounded-lg bg-gray-100"
           >
             <img
-              src={product.images[selectedImage]}
+              src={currentImages[selectedImage] || product.images[selectedImage]}
               alt={product.name}
               className="w-full h-full object-cover"
             />
           </motion.div>
           
-          {product.images.length > 1 && (
+          {currentImages.length > 1 && (
             <div className="grid grid-cols-4 gap-4">
-              {product.images.map((image: string, index: number) => (
+              {currentImages.map((image: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -176,27 +197,83 @@ const ProductDetail: React.FC = () => {
             <p className="text-gray-600 leading-relaxed">{product.description}</p>
           </div>
 
-          {/* Colors */}
-          {product.colors && product.colors.length > 0 && (
+          {/* Color Variations */}
+          {product.colorVariations && product.colorVariations.length > 0 ? (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Color</h3>
-              <div className="flex flex-wrap gap-3">
-                {product.colors.map((color: string) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 border rounded-lg font-medium ${
-                      selectedColor === color
-                        ? 'border-primary-500 bg-primary-50 text-primary-700'
-                        : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                    }`}
-                    title={`Select ${color} color`}
-                  >
-                    {color}
-                  </button>
-                ))}
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Color Variations</h3>
+              <div className="space-y-4">
+                {/* Color Swatches */}
+                <div className="flex flex-wrap gap-3">
+                  {product.colorVariations.map((variation: any, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => handleColorVariationChange(variation)}
+                      className={`flex items-center space-x-2 px-3 py-2 border rounded-lg font-medium transition-all ${
+                        selectedColorVariation?.color === variation.color
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                      }`}
+                      title={`Select ${variation.color} color`}
+                    >
+                      <div
+                        className="w-4 h-4 rounded-full border border-gray-300"
+                        style={{ backgroundColor: variation.colorCode || '#000000' }}
+                      ></div>
+                      <span>{variation.color}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Color-specific Image Gallery */}
+                {selectedColorVariation && selectedColorVariation.images.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                      {selectedColorVariation.color} Images
+                    </h4>
+                    <div className="flex space-x-2 overflow-x-auto scrollbar-hide pb-2">
+                      {selectedColorVariation.images.map((image: string, imgIndex: number) => (
+                        <button
+                          key={imgIndex}
+                          onClick={() => setSelectedImage(imgIndex)}
+                          className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden ${
+                            selectedImage === imgIndex ? 'border-primary-500' : 'border-gray-200'
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`${selectedColorVariation.color} ${imgIndex + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+          ) : (
+            /* Fallback to legacy colors */
+            product.colors && product.colors.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Color</h3>
+                <div className="flex flex-wrap gap-3">
+                  {product.colors.map((color: string) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 border rounded-lg font-medium ${
+                        selectedColor === color
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                      }`}
+                      title={`Select ${color} color`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
           )}
 
           {/* Sizes */}

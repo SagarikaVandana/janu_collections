@@ -282,10 +282,15 @@ const ProductModal: React.FC<{
     sizes: product?.sizes?.join(', ') || '',
     colors: product?.colors?.join(', ') || '',
     images: product?.images || [],
+    colorVariations: product?.colorVariations || [],
+    mainImage: product?.mainImage || '',
   });
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [currentColor, setCurrentColor] = useState('');
+  const [currentColorCode, setCurrentColorCode] = useState('');
+  const [colorImages, setColorImages] = useState<string[]>([]);
 
   const categories = ['sarees', 'kurtis', 'western', 'ethnic', 'accessories'];
 
@@ -365,6 +370,50 @@ const ProductModal: React.FC<{
     }
   };
 
+  const addColorVariation = () => {
+    if (!currentColor.trim()) {
+      toast.error('Please enter a color name');
+      return;
+    }
+
+    const newVariation = {
+      color: currentColor.trim(),
+      colorCode: currentColorCode.trim() || '#000000',
+      images: colorImages.length > 0 ? colorImages : [],
+      isMainColor: formData.colorVariations.length === 0
+    };
+
+    setFormData({
+      ...formData,
+      colorVariations: [...formData.colorVariations, newVariation]
+    });
+
+    // Reset color form
+    setCurrentColor('');
+    setCurrentColorCode('');
+    setColorImages([]);
+  };
+
+  const removeColorVariation = (index: number) => {
+    const updatedVariations = formData.colorVariations.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      colorVariations: updatedVariations
+    });
+  };
+
+  const setMainColor = (index: number) => {
+    const updatedVariations = formData.colorVariations.map((variation, i) => ({
+      ...variation,
+      isMainColor: i === index
+    }));
+    setFormData({
+      ...formData,
+      colorVariations: updatedVariations,
+      mainImage: updatedVariations[index]?.images[0] || ''
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -379,6 +428,8 @@ const ProductModal: React.FC<{
         images: formData.images.length > 0 ? formData.images : [
           'https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg',
         ],
+        colorVariations: formData.colorVariations,
+        mainImage: formData.mainImage || formData.images[0] || ''
       };
 
       if (product) {
@@ -519,6 +570,147 @@ const ProductModal: React.FC<{
               <p className="text-xs text-gray-500 mt-1">
                 Enter color names or hex codes (e.g., Red, #FF0000, Blue, #0000FF)
               </p>
+            </div>
+
+            {/* Color Variations Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Color Variations with Images</h3>
+              
+              {/* Add New Color Variation */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <h4 className="font-medium text-gray-900 mb-3">Add Color Variation</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Color Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={currentColor}
+                      onChange={(e) => setCurrentColor(e.target.value)}
+                      placeholder="e.g., Red, Blue, Green"
+                      className="input-field"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Color Code (optional)
+                    </label>
+                    <input
+                      type="color"
+                      value={currentColorCode || '#000000'}
+                      onChange={(e) => setCurrentColorCode(e.target.value)}
+                      className="input-field h-10"
+                    />
+                  </div>
+                </div>
+
+                {/* Color Images Upload */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Images for this color
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {colorImages.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image}
+                          alt={`Color ${index + 1}`}
+                          className="w-16 h-16 object-cover rounded border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setColorImages(colorImages.filter((_, i) => i !== index))}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        Array.from(e.target.files).forEach(file => {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const result = event.target?.result as string;
+                            if (result) {
+                              setColorImages(prev => [...prev, result]);
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        });
+                      }
+                    }}
+                    className="input-field"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={addColorVariation}
+                  className="btn-primary"
+                >
+                  Add Color Variation
+                </button>
+              </div>
+
+              {/* Existing Color Variations */}
+              {formData.colorVariations.length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Existing Color Variations</h4>
+                  {formData.colorVariations.map((variation: any, index: number) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div
+                            className="w-6 h-6 rounded-full border"
+                            style={{ backgroundColor: variation.colorCode || '#000000' }}
+                          ></div>
+                          <span className="font-medium">{variation.color}</span>
+                          {variation.isMainColor && (
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                              Main Color
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex space-x-2">
+                          {!variation.isMainColor && (
+                            <button
+                              type="button"
+                              onClick={() => setMainColor(index)}
+                              className="text-blue-600 hover:text-blue-800 text-sm"
+                            >
+                              Set as Main
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeColorVariation(index)}
+                            className="text-red-600 hover:text-red-800 text-sm"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {variation.images.map((image: string, imgIndex: number) => (
+                          <img
+                            key={imgIndex}
+                            src={image}
+                            alt={`${variation.color} ${imgIndex + 1}`}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
               </div>
 
