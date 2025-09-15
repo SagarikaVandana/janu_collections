@@ -61,7 +61,8 @@ const AdminCoupons: React.FC = () => {
   const fetchCoupons = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/coupons', {
+      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      const response = await axios.get(`${API_BASE_URL}/api/coupons`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           page: pagination.current,
@@ -83,19 +84,21 @@ const AdminCoupons: React.FC = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      
       const payload = {
         ...formData,
-        maximumDiscountAmount: formData.maximumDiscountAmount ? Number(formData.maximumDiscountAmount) : null,
-        usageLimit: formData.usageLimit ? Number(formData.usageLimit) : null
+        maximumDiscountAmount: formData.maximumDiscountAmount ? Number(formData.maximumDiscountAmount) : undefined,
+        usageLimit: formData.usageLimit ? Number(formData.usageLimit) : undefined
       };
 
       if (editingCoupon) {
-        await axios.put(`/api/coupons/${editingCoupon._id}`, payload, {
+        await axios.put(`${API_BASE_URL}/api/coupons/${editingCoupon._id}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success('Coupon updated successfully');
       } else {
-        await axios.post('/api/coupons', payload, {
+        await axios.post(`${API_BASE_URL}/api/coupons`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success('Coupon created successfully');
@@ -147,24 +150,29 @@ const AdminCoupons: React.FC = () => {
   };
 
   const handleDelete = async (couponId: string) => {
-    if (!confirm('Are you sure you want to delete this coupon?')) return;
+    if (!window.confirm('Are you sure you want to delete this coupon?')) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/coupons/${couponId}`, {
+      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      await axios.delete(`${API_BASE_URL}/api/coupons/${couponId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Coupon deleted successfully');
       fetchCoupons();
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to delete coupon');
+    } catch (error) {
+      console.error('Error deleting coupon:', error);
+      toast.error('Failed to delete coupon');
     }
   };
 
   const toggleStatus = async (coupon: Coupon) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`/api/coupons/${coupon._id}`, 
+      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      await axios.put(`${API_BASE_URL}/api/coupons/${coupon._id}`, 
         { isActive: !coupon.isActive },
         { headers: { Authorization: `Bearer ${token}` } }
       );

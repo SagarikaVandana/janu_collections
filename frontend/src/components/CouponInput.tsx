@@ -32,7 +32,8 @@ const CouponInput: React.FC<CouponInputProps> = ({
     setIsValidating(true);
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const response = await axios.post('/api/coupons/validate', {
+      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      const response = await axios.post(`${API_BASE_URL}/api/coupons/validate`, {
         code: couponCode.toUpperCase(),
         orderAmount,
         userId: user._id,
