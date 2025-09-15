@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import WhatsAppContact from '../components/WhatsAppContact';
+import RecommendedProducts from '../components/RecommendedProducts';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams();
@@ -265,6 +266,16 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Recommended Products Section */}
+      <div className="mt-16 border-t pt-12">
+        <RecommendedProducts 
+          currentProductId={product?._id}
+          category={product?.category}
+          title="Similar Products You May Like"
+          limit={4}
+        />
       </div>
     </div>
   );

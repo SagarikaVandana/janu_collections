@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
+import RecommendedProducts from '../components/RecommendedProducts';
 
 const Cart: React.FC = () => {
   const { cartItems, updateQuantity, removeFromCart, totalAmount, totalItems } = useCart();
@@ -141,6 +142,14 @@ const Cart: React.FC = () => {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Recommended Products Section */}
+      <div className="mt-12 border-t pt-8">
+        <RecommendedProducts 
+          title="You might also like"
+          limit={4}
+        />
       </div>
     </div>
   );
