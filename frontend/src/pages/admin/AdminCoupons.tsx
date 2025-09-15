@@ -61,7 +61,7 @@ const AdminCoupons: React.FC = () => {
   const fetchCoupons = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
       const response = await axios.get(`${API_BASE_URL}/api/coupons`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
@@ -84,7 +84,7 @@ const AdminCoupons: React.FC = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
       
       const payload = {
         ...formData,
@@ -156,7 +156,7 @@ const AdminCoupons: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
       await axios.delete(`${API_BASE_URL}/api/coupons/${couponId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -171,7 +171,7 @@ const AdminCoupons: React.FC = () => {
   const toggleStatus = async (coupon: Coupon) => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
       await axios.put(`${API_BASE_URL}/api/coupons/${coupon._id}`, 
         { isActive: !coupon.isActive },
         { headers: { Authorization: `Bearer ${token}` } }
