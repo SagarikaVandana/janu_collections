@@ -117,7 +117,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
           </div>
           
-          {product.rating && (
+          {product.rating && product.rating > 0 && (
             <div className="flex items-center">
               <span className="text-xs sm:text-sm text-gray-600">★ {product.rating}</span>
             </div>
