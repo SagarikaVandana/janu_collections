@@ -60,14 +60,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <motion.div
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className="card group relative"
+      className="card group relative h-full flex flex-col"
     >
       <div className="relative overflow-hidden">
         <Link to={`/product/${product._id}`}>
           <img
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+            className="w-full h-48 sm:h-56 lg:h-64 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
           />
         </Link>
         
@@ -102,23 +102,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
       
-      <div className="p-4">
-        <Link to={`/product/${product._id}`} className="block group">
-          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-primary-600 transition-colors">{product.name}</h3>
-          <p className="text-sm text-gray-500 mb-2 capitalize">{product.category}</p>
+      <div className="p-3 sm:p-4 flex-1 flex flex-col">
+        <Link to={`/product/${product._id}`} className="block group flex-1">
+          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-primary-600 transition-colors text-sm sm:text-base">{product.name}</h3>
+          <p className="text-xs sm:text-sm text-gray-500 mb-2 capitalize">{product.category}</p>
         </Link>
         
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <span className="text-base sm:text-lg font-bold text-gray-900">₹{product.price}</span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+              <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
             )}
           </div>
           
           {product.rating && (
             <div className="flex items-center">
-              <span className="text-sm text-gray-600">★ {product.rating}</span>
+              <span className="text-xs sm:text-sm text-gray-600">★ {product.rating}</span>
             </div>
           )}
         </div>
@@ -126,9 +126,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          className="w-full flex items-center justify-center space-x-2 bg-primary-500 text-white py-2 px-4 rounded-md hover:bg-primary-600 transition-colors"
+          className="w-full flex items-center justify-center space-x-2 bg-primary-500 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-primary-600 transition-colors text-sm sm:text-base"
         >
-          <ShoppingBag className="h-4 w-4" />
+          <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
           <span>Add to Cart</span>
         </button>
       </div>

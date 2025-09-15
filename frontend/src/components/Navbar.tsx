@@ -105,20 +105,20 @@ const Navbar: React.FC = () => {
                 <Search className="h-5 w-5" />
               </button>
               {isSearchOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-2 z-50">
-                  <form onSubmit={handleSearch} className="px-4">
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-md shadow-lg py-2 z-50 max-w-[calc(100vw-2rem)] mr-4 sm:mr-0">
+                  <form onSubmit={handleSearch} className="px-3 sm:px-4">
                     <div className="flex items-center space-x-2">
                       <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search products..."
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="flex-1 px-2 sm:px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                         autoFocus
                       />
                       <button
                         type="submit"
-                        className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
+                        className="px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors text-sm"
                       >
                         Search
                       </button>
@@ -158,6 +158,7 @@ const Navbar: React.FC = () => {
                 <button 
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="p-2 text-gray-600 hover:text-primary-500 transition-colors"
+                  title="User menu"
                 >
                   <User className="h-5 w-5" />
                 </button>

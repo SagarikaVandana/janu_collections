@@ -6,10 +6,10 @@ import Logo from './Logo';
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
+          <div className="sm:col-span-2 lg:col-span-1">
             <div className="mb-4">
               <Logo size="md" showText={true} className="text-white" />
             </div>
@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
               >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="https://www.facebook.com/janucollectionvizag1" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/janucollectionvizag1" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" title="Follow us on Facebook">
                 <Facebook className="h-5 w-5" />
               </a>
               <a 
@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
               >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="https://www.facebook.com/janucollectionvizag1" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/janucollectionvizag1" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" title="Follow us on Facebook">
                 <Facebook className="h-5 w-5" />
               </a>
               <a 
