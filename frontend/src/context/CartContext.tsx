@@ -22,6 +22,8 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+export { CartContext };
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
