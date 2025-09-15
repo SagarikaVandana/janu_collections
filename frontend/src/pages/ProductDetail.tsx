@@ -160,7 +160,7 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {/* Rating */}
-          {product.rating && (
+          {product.rating && product.rating > 0 && (
             <div className="flex items-center space-x-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
