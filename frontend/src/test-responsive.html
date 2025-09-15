@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl sm:text-4xl lg:text-6xl font-bold text-center mb-8">
+            Responsive Test
+        </h1>
+        
+        <!-- Test Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+            <div class="bg-red-500 text-white p-4 rounded text-center">
+                <h3 class="font-bold">Item 1</h3>
+                <p class="text-sm">Mobile: 1 col</p>
+                <p class="text-sm">Tablet: 2 cols</p>
+                <p class="text-sm">Desktop: 3-4 cols</p>
+            </div>
+            <div class="bg-blue-500 text-white p-4 rounded text-center">
+                <h3 class="font-bold">Item 2</h3>
+                <p class="text-sm">Should stack on mobile</p>
+            </div>
+            <div class="bg-green-500 text-white p-4 rounded text-center">
+                <h3 class="font-bold">Item 3</h3>
+                <p class="text-sm">2 cols on tablet</p>
+            </div>
+            <div class="bg-purple-500 text-white p-4 rounded text-center">
+                <h3 class="font-bold">Item 4</h3>
+                <p class="text-sm">4 cols on xl screens</p>
+            </div>
+        </div>
+        
+        <!-- Test Typography -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-4">Typography Test</h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-600">
+                This text should scale: small on mobile, medium on tablet, large on desktop.
+            </p>
+        </div>
+        
+        <!-- Test Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition-colors duration-200 text-sm sm:text-base">
+                Mobile Button
+            </button>
+            <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition-colors duration-200 text-sm sm:text-base">
+                Responsive Button
+            </button>
+        </div>
+        
+        <!-- Screen Size Indicator -->
+        <div class="mt-8 text-center">
+            <div class="inline-block bg-gray-800 text-white px-4 py-2 rounded">
+                <span class="sm:hidden">📱 Mobile View (< 640px)</span>
+                <span class="hidden sm:inline lg:hidden">📟 Tablet View (640px - 1024px)</span>
+                <span class="hidden lg:inline xl:hidden">💻 Desktop View (1024px - 1280px)</span>
+                <span class="hidden xl:inline">🖥️ Large Desktop View (> 1280px)</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

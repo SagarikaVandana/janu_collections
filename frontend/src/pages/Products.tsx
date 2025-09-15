@@ -239,7 +239,7 @@ const Products: React.FC = () => {
 
           {/* Products Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[...Array(12)].map((_, index) => (
                 <div key={index} className="card animate-pulse">
                   <div className="h-48 sm:h-56 lg:h-64 bg-gray-300 rounded-t-lg"></div>
@@ -252,7 +252,7 @@ const Products: React.FC = () => {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {products.map((product: any) => (
                 <ProductCard key={product._id} product={product} />
               ))}

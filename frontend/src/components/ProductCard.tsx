@@ -67,7 +67,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <img
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-48 sm:h-56 lg:h-64 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+            className="w-full h-40 sm:h-48 md:h-56 lg:h-64 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
           />
         </Link>
         
@@ -102,7 +102,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
       
-      <div className="p-3 sm:p-4 flex-1 flex flex-col">
+      <div className="p-2 sm:p-3 md:p-4 flex-1 flex flex-col">
         <Link to={`/product/${product._id}`} className="block group flex-1">
           <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-primary-600 transition-colors text-sm sm:text-base">{product.name}</h3>
           <p className="text-xs sm:text-sm text-gray-500 mb-2 capitalize">{product.category}</p>
