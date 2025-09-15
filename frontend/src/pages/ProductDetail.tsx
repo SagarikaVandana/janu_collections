@@ -17,6 +17,7 @@ const ProductDetail: React.FC = () => {
   const [product, setProduct] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +33,9 @@ const ProductDetail: React.FC = () => {
       setProduct(response.data);
       if (response.data.sizes?.length > 0) {
         setSelectedSize(response.data.sizes[0]);
+      }
+      if (response.data.colors?.length > 0) {
+        setSelectedColor(response.data.colors[0]);
       }
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -172,6 +176,29 @@ const ProductDetail: React.FC = () => {
             <p className="text-gray-600 leading-relaxed">{product.description}</p>
           </div>
 
+          {/* Colors */}
+          {product.colors && product.colors.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Color</h3>
+              <div className="flex flex-wrap gap-3">
+                {product.colors.map((color: string) => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    className={`px-4 py-2 border rounded-lg font-medium ${
+                      selectedColor === color
+                        ? 'border-primary-500 bg-primary-50 text-primary-700'
+                        : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                    }`}
+                    title={`Select ${color} color`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Sizes */}
           {product.sizes && product.sizes.length > 0 && (
             <div>
@@ -186,6 +213,7 @@ const ProductDetail: React.FC = () => {
                         ? 'border-primary-500 bg-primary-50 text-primary-700'
                         : 'border-gray-300 text-gray-700 hover:border-gray-400'
                     }`}
+                    title={`Select size ${size}`}
                   >
                     {size}
                   </button>

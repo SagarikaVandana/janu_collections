@@ -141,6 +141,9 @@ const AdminProducts: React.FC = () => {
                   Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Colors
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Price
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -154,7 +157,7 @@ const AdminProducts: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
                     {products.length === 0 ? 'No products found' : 'No products match your search'}
                   </td>
                 </tr>
@@ -184,6 +187,26 @@ const AdminProducts: React.FC = () => {
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                     {product.category}
                       </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-wrap gap-1">
+                      {product.colors && product.colors.length > 0 ? (
+                        product.colors.slice(0, 3).map((color: string, index: number) => (
+                          <span
+                            key={index}
+                            className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800"
+                            title={color}
+                          >
+                            {color}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-gray-400">No colors</span>
+                      )}
+                      {product.colors && product.colors.length > 3 && (
+                        <span className="text-xs text-gray-500">+{product.colors.length - 3}</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     ₹{product.price}
@@ -257,6 +280,7 @@ const ProductModal: React.FC<{
     originalPrice: product?.originalPrice || '',
     category: product?.category || '',
     sizes: product?.sizes?.join(', ') || '',
+    colors: product?.colors?.join(', ') || '',
     images: product?.images || [],
   });
   const [loading, setLoading] = useState(false);
@@ -351,6 +375,7 @@ const ProductModal: React.FC<{
         price: Number(formData.price),
         originalPrice: formData.originalPrice ? Number(formData.originalPrice) : undefined,
         sizes: formData.sizes.split(',').map(s => s.trim()).filter(s => s),
+        colors: formData.colors.split(',').map(c => c.trim()).filter(c => c),
         images: formData.images.length > 0 ? formData.images : [
           'https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg',
         ],
@@ -477,6 +502,23 @@ const ProductModal: React.FC<{
                 placeholder="S, M, L, XL"
                 className="input-field"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Colors (comma separated)
+              </label>
+              <input
+                type="text"
+                name="colors"
+                value={formData.colors}
+                onChange={handleInputChange}
+                placeholder="Red, Blue, Green, Black, White"
+                className="input-field"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter color names or hex codes (e.g., Red, #FF0000, Blue, #0000FF)
+              </p>
             </div>
               </div>
 
