@@ -1,12 +1,30 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import React, { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { CartContext } from '../context/CartContext';
+import { WishlistContext } from '../context/WishlistContext';
+import { AuthContext } from '../context/AuthContext';
 import RecommendedProducts from '../components/RecommendedProducts';
+import CouponInput from '../components/CouponInput';
+import toast from 'react-hot-toast';
 
 const Cart: React.FC = () => {
-  const { cartItems, updateQuantity, removeFromCart, totalAmount, totalItems } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, totalAmount, totalItems } = useContext(CartContext);
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+
+  const handleCouponApplied = (coupon: any, discount: number) => {
+    setAppliedCoupon(coupon);
+    setDiscountAmount(discount);
+  };
+
+  const handleCouponRemoved = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+  };
+
+  const finalAmount = totalAmount - discountAmount;
 
   if (cartItems.length === 0) {
     return (
@@ -89,6 +107,17 @@ const Cart: React.FC = () => {
         ))}
       </div>
 
+      {/* Coupon Section */}
+      <div className="mt-8">
+        <CouponInput
+          orderAmount={totalAmount}
+          cartItems={cartItems}
+          onCouponApplied={handleCouponApplied}
+          onCouponRemoved={handleCouponRemoved}
+          appliedCoupon={appliedCoupon}
+        />
+      </div>
+
       {/* Cart Summary */}
       <div className="mt-8 card p-6">
         <div className="space-y-4">
@@ -96,6 +125,13 @@ const Cart: React.FC = () => {
             <span className="text-lg text-gray-600">Items ({totalItems})</span>
             <span className="text-lg font-semibold">₹{totalAmount}</span>
           </div>
+          
+          {appliedCoupon && (
+            <div className="flex justify-between items-center text-green-600">
+              <span className="text-lg">Coupon Discount ({appliedCoupon.code})</span>
+              <span className="text-lg font-semibold">-₹{discountAmount}</span>
+            </div>
+          )}
           
           {totalItems >= 5 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -109,9 +145,14 @@ const Cart: React.FC = () => {
             <div className="flex justify-between items-center">
               <span className="text-xl font-bold text-gray-900">Total</span>
               <span className="text-xl font-bold text-gray-900">
-                ₹{totalAmount}
+                ₹{finalAmount}
               </span>
             </div>
+            {appliedCoupon && (
+              <p className="text-sm text-green-600 mt-1">
+                You saved ₹{discountAmount} with coupon {appliedCoupon.code}!
+              </p>
+            )}
           </div>
           
           <div className="pt-4">

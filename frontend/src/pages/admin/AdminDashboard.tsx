@@ -9,6 +9,7 @@ import {
   BarChart3,
   CreditCard,
   Mail,
+  Ticket,
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -200,6 +201,16 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center">
                 <Mail className="h-5 w-5 text-primary-500 mr-3" />
                 <span className="font-medium">Newsletter</span>
+              </div>
+            </Link>
+            
+            <Link
+              to="/admin/coupons"
+              className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center">
+                <Ticket className="h-5 w-5 text-primary-500 mr-3" />
+                <span className="font-medium">Manage Coupons</span>
               </div>
             </Link>
             

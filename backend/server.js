@@ -14,6 +14,7 @@ import orderRoutes from './routes/orders.js';
 import adminRoutes from './routes/admin.js';
 import paymentSettingsRoutes from './routes/paymentSettings.js';
 import newsletterRoutes from './routes/newsletter.js';
+import couponRoutes from './routes/coupons.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -189,6 +190,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment-settings', paymentSettingsRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/coupons', couponRoutes);
 
 console.log('All routes registered');
 

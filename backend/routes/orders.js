@@ -34,13 +34,13 @@ router.post('/create-payment-intent', authenticateToken, [
   }
 });
 
-// Create order
+// Create new order
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { items, totalAmount, shippingInfo, paymentMethod, transactionNumber } = req.body;
+    const { items, shippingInfo, paymentMethod, couponId } = req.body;
     
     console.log('Creating order for user:', req.user.userId);
-    console.log('Order data:', { items: items.length, totalAmount, paymentMethod });
+    console.log('Order data:', { items: items.length, paymentMethod });
     console.log('Shipping info received:', shippingInfo);
 
     // Validate items

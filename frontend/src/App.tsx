@@ -23,6 +23,7 @@ import AdminNewsletter from './pages/admin/AdminNewsletter';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminReports from './pages/admin/AdminReports';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminCoupons from './pages/admin/AdminCoupons';
 import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -113,10 +114,15 @@ function App() {
               <AdminUsers />
             </AdminRoute>
           } />
+          <Route path="/admin/coupons" element={
+            <AdminRoute>
+              <AdminCoupons />
+            </AdminRoute>
+          } />
         </Routes>
       </main>
       <Footer />
-      <WhatsAppContact variant="floating" />
+      <WhatsAppContact />
     </div>
   );
 }
