@@ -24,7 +24,7 @@ const Cart: React.FC = () => {
     setDiscountAmount(0);
   };
 
-  const finalAmount = totalAmount - discountAmount;
+  const finalAmount = Math.max(0, totalAmount - discountAmount);
 
   if (cartItems.length === 0) {
     return (
