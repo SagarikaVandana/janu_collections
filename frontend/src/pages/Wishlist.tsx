@@ -89,7 +89,7 @@ const Wishlist: React.FC = () => {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {wishlistItems.map((product) => (
             <motion.div
               key={product._id}
@@ -102,7 +102,7 @@ const Wishlist: React.FC = () => {
                 <img
                   src={product.images[0]}
                   alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-40 sm:h-48 md:h-56 lg:h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -126,34 +126,35 @@ const Wishlist: React.FC = () => {
                 </div>
               </div>
               
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2 capitalize">{product.category}</p>
+              <div className="p-2 sm:p-3 md:p-4">
+                <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 text-sm sm:text-base">{product.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mb-2 capitalize">{product.category}</p>
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-1 sm:space-x-2">
+                    <span className="text-sm sm:text-lg font-bold text-gray-900">₹{product.price}</span>
                     {product.originalPrice && (
-                      <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+                      <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
                     )}
                   </div>
                 </div>
                 
-                <div className="mt-4 flex space-x-2">
+                <div className="flex space-x-1 sm:space-x-2">
                   <button
                     onClick={() => handleAddToCart(product)}
-                    className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
+                    className="flex-1 flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors text-xs sm:text-sm"
                   >
-                    <ShoppingBag className="h-4 w-4" />
-                    <span>Add to Cart</span>
+                    <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Add to Cart</span>
+                    <span className="sm:hidden">Add</span>
                   </button>
                   
                   <button
                     onClick={() => handleRemoveFromWishlist(product._id)}
-                    className="px-4 py-2 text-red-600 hover:text-red-700 transition-colors"
+                    className="px-2 sm:px-4 py-2 text-red-600 hover:text-red-700 transition-colors"
                     title="Remove from wishlist"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   </button>
                 </div>
               </div>
