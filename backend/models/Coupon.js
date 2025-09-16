@@ -107,9 +107,10 @@ couponSchema.index({ createdBy: 1 });
 // Virtual for checking if coupon is currently valid
 couponSchema.virtual('isCurrentlyValid').get(function() {
   const now = new Date();
+  const nowUTC = new Date(now.toISOString());
   return this.isActive && 
-         this.validFrom <= now && 
-         this.validUntil >= now &&
+         this.validFrom <= nowUTC && 
+         this.validUntil >= nowUTC &&
          (this.usageLimit === null || this.usedCount < this.usageLimit);
 });
 
@@ -166,10 +167,11 @@ couponSchema.methods.useCoupon = function(userId, orderAmount, discountAmount) {
 // Static method to find valid coupons
 couponSchema.statics.findValidCoupons = function() {
   const now = new Date();
+  const nowUTC = new Date(now.toISOString());
   return this.find({
     isActive: true,
-    validFrom: { $lte: now },
-    validUntil: { $gte: now },
+    validFrom: { $lte: nowUTC },
+    validUntil: { $gte: nowUTC },
     $or: [
       { usageLimit: null },
       { $expr: { $lt: ['$usedCount', '$usageLimit'] } }
