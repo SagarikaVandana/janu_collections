@@ -351,6 +351,129 @@ router.post('/apply', async (req, res) => {
   }
 });
 
+// Seed test coupons (Public - for testing)
+router.post('/seed-test', async (req, res) => {
+  try {
+    const User = mongoose.model('User');
+    
+    // Find admin user
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (!adminUser) {
+      return res.status(404).json({ error: 'Admin user not found' });
+    }
+
+    // Clear existing coupons
+    await Coupon.deleteMany({});
+    console.log('Cleared existing coupons');
+
+    // Current date and future dates
+    const now = new Date();
+    const validFrom = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 1 day ago
+    const validUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+    // Sample coupons
+    const coupons = [
+      {
+        code: 'WELCOME10',
+        description: 'Get 10% off on your first order',
+        discountType: 'percentage',
+        discountValue: 10,
+        minimumOrderAmount: 500,
+        maximumDiscountAmount: 200,
+        usageLimit: 100,
+        userUsageLimit: 1,
+        validFrom,
+        validUntil,
+        isActive: true,
+        applicableCategories: [],
+        excludedCategories: [],
+        createdBy: adminUser._id
+      },
+      {
+        code: 'SAVE20',
+        description: 'Save 20% on orders above ₹1000',
+        discountType: 'percentage',
+        discountValue: 20,
+        minimumOrderAmount: 1000,
+        maximumDiscountAmount: 500,
+        usageLimit: 50,
+        userUsageLimit: 2,
+        validFrom,
+        validUntil,
+        isActive: true,
+        applicableCategories: [],
+        excludedCategories: [],
+        createdBy: adminUser._id
+      },
+      {
+        code: 'FLAT100',
+        description: 'Flat ₹100 off on minimum order of ₹300',
+        discountType: 'fixed',
+        discountValue: 100,
+        minimumOrderAmount: 300,
+        usageLimit: 200,
+        userUsageLimit: 3,
+        validFrom,
+        validUntil,
+        isActive: true,
+        applicableCategories: [],
+        excludedCategories: [],
+        createdBy: adminUser._id
+      },
+      {
+        code: 'FESTIVE50',
+        description: 'Festive offer - 50% off on selected categories',
+        discountType: 'percentage',
+        discountValue: 50,
+        minimumOrderAmount: 800,
+        maximumDiscountAmount: 1000,
+        usageLimit: 75,
+        userUsageLimit: 1,
+        validFrom,
+        validUntil,
+        isActive: true,
+        applicableCategories: ['Sarees', 'Kurtis', 'Dresses'],
+        excludedCategories: [],
+        createdBy: adminUser._id
+      },
+      {
+        code: 'NEWUSER',
+        description: 'Special offer for new users - 15% off',
+        discountType: 'percentage',
+        discountValue: 15,
+        minimumOrderAmount: 400,
+        maximumDiscountAmount: 300,
+        usageLimit: 150,
+        userUsageLimit: 1,
+        validFrom,
+        validUntil,
+        isActive: true,
+        applicableCategories: [],
+        excludedCategories: [],
+        createdBy: adminUser._id
+      }
+    ];
+
+    // Insert coupons
+    await Coupon.insertMany(coupons);
+    
+    res.json({
+      success: true,
+      message: `${coupons.length} test coupons created successfully`,
+      coupons: coupons.map(c => ({
+        code: c.code,
+        description: c.description,
+        discountType: c.discountType,
+        discountValue: c.discountValue,
+        minimumOrderAmount: c.minimumOrderAmount
+      }))
+    });
+  } catch (error) {
+    console.error('Error seeding coupons:', error);
+    res.status(500).json({ error: 'Failed to seed coupons' });
+  }
+});
+
 // Seed test coupons (Admin only)
 router.post('/seed', authenticateToken, requireAdmin, async (req, res) => {
   try {
